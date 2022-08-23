@@ -24,7 +24,7 @@ struct Api {
 
             // Early return in case of error.
             if let error = error {
-                print(error.localizedDescription)
+                printError(self, error.localizedDescription)
                 completionHandler(.failure(.error(error.localizedDescription)))
                 return
             }
@@ -39,7 +39,7 @@ struct Api {
                 return
             }
 
-            print(String(data: data, encoding: .utf8) ?? "")
+            printError(self, String(data: data, encoding: .utf8) ?? "")
             completionHandler(.failure(ApiError.couldNotDecodeResponse))
         }.resume()
     }

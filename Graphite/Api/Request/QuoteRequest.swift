@@ -60,7 +60,7 @@ extension QuoteRequest {
         var unitRepresentation: Int {
             switch self {
             case .sol(let amount):
-                /// 1 SOL = 1 Billion Lamports
+                // 1 SOL = 1 Billion Lamports
                 return amount * 1_000_000_000
             }
         }
