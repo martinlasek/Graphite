@@ -15,7 +15,7 @@ let quoteRequest = QuoteRequest(
 )
 
 if let urlRequest = quoteRequest.createRequest() {
-    Api.send(request: urlRequest) { (result: Result<QuoteModel, ApiError>) in
+    Api.send(request: urlRequest) { (result: Result<QuoteResponse, ApiError>) in
         switch result {
         case .success(let model):
             print(model.contextSlot ?? "")
