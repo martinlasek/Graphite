@@ -67,6 +67,8 @@ extension QuoteRequest {
     }
 }
 
+// MARK: - Slippage
+
 extension QuoteRequest {
     enum Slippage {
         case percent(Float)
