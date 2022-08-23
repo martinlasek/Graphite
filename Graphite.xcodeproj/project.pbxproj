@@ -93,9 +93,9 @@
 		23F1A90128B52884005CA130 /* Api */ = {
 			isa = PBXGroup;
 			children = (
-				23F1A90A28B53AAE005CA130 /* Response */,
-				23F1A90728B53290005CA130 /* Request */,
 				23F1A8FF28B52742005CA130 /* Api.swift */,
+				23F1A90728B53290005CA130 /* Request */,
+				23F1A90A28B53AAE005CA130 /* Response */,
 			);
 			path = Api;
 			sourceTree = "<group>";
