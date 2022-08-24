@@ -11,7 +11,10 @@
 		232A173628B1FDA200D6B86A /* Base58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173528B1FDA200D6B86A /* Base58.swift */; };
 		232A173A28B28CD400D6B86A /* Solana in Frameworks */ = {isa = PBXBuildFile; productRef = 232A173928B28CD400D6B86A /* Solana */; };
 		232A173C28B2C5FC00D6B86A /* PrivateKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173B28B2C5FC00D6B86A /* PrivateKeyManager.swift */; };
-		232A173E28B2D31600D6B86A /* InMemoryAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173D28B2D31600D6B86A /* InMemoryAccountStorage.swift */; };
+		23F1A8FE28B525B8005CA130 /* QuoteResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F1A8FD28B525B8005CA130 /* QuoteResponse.swift */; };
+		23F1A90028B52742005CA130 /* Api.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F1A8FF28B52742005CA130 /* Api.swift */; };
+		23F1A90428B52A36005CA130 /* Print+Precisely.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F1A90328B52A36005CA130 /* Print+Precisely.swift */; };
+		23F1A90928B532A5005CA130 /* QuoteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F1A90828B532A5005CA130 /* QuoteRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,9 +34,12 @@
 		232A172E28B1FD7300D6B86A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		232A173528B1FDA200D6B86A /* Base58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base58.swift; sourceTree = "<group>"; };
 		232A173B28B2C5FC00D6B86A /* PrivateKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateKeyManager.swift; sourceTree = "<group>"; };
-		232A173D28B2D31600D6B86A /* InMemoryAccountStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryAccountStorage.swift; sourceTree = "<group>"; };
 		232A174028B2DB9000D6B86A /* private-key-setup.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "private-key-setup.gif"; sourceTree = "<group>"; };
 		232A174128B2DBC500D6B86A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		23F1A8FD28B525B8005CA130 /* QuoteResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteResponse.swift; sourceTree = "<group>"; };
+		23F1A8FF28B52742005CA130 /* Api.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Api.swift; sourceTree = "<group>"; };
+		23F1A90328B52A36005CA130 /* Print+Precisely.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Print+Precisely.swift"; sourceTree = "<group>"; };
+		23F1A90828B532A5005CA130 /* QuoteRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +58,7 @@
 			isa = PBXGroup;
 			children = (
 				232A174128B2DBC500D6B86A /* README.md */,
+				232A173F28B2DB8400D6B86A /* Resources */,
 				232A172D28B1FD7300D6B86A /* Graphite */,
 				232A172C28B1FD7300D6B86A /* Products */,
 			);
@@ -68,11 +75,9 @@
 		232A172D28B1FD7300D6B86A /* Graphite */ = {
 			isa = PBXGroup;
 			children = (
-				232A173F28B2DB8400D6B86A /* Resources */,
 				232A172E28B1FD7300D6B86A /* main.swift */,
-				232A173528B1FDA200D6B86A /* Base58.swift */,
-				232A173B28B2C5FC00D6B86A /* PrivateKeyManager.swift */,
-				232A173D28B2D31600D6B86A /* InMemoryAccountStorage.swift */,
+				23F1A90128B52884005CA130 /* Api */,
+				23F1A90228B52A2A005CA130 /* Utils */,
 			);
 			path = Graphite;
 			sourceTree = "<group>";
@@ -83,6 +88,42 @@
 				232A174028B2DB9000D6B86A /* private-key-setup.gif */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		23F1A90128B52884005CA130 /* Api */ = {
+			isa = PBXGroup;
+			children = (
+				23F1A8FF28B52742005CA130 /* Api.swift */,
+				23F1A90728B53290005CA130 /* Request */,
+				23F1A90A28B53AAE005CA130 /* Response */,
+			);
+			path = Api;
+			sourceTree = "<group>";
+		};
+		23F1A90228B52A2A005CA130 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				232A173B28B2C5FC00D6B86A /* PrivateKeyManager.swift */,
+				232A173528B1FDA200D6B86A /* Base58.swift */,
+				23F1A90328B52A36005CA130 /* Print+Precisely.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		23F1A90728B53290005CA130 /* Request */ = {
+			isa = PBXGroup;
+			children = (
+				23F1A90828B532A5005CA130 /* QuoteRequest.swift */,
+			);
+			path = Request;
+			sourceTree = "<group>";
+		};
+		23F1A90A28B53AAE005CA130 /* Response */ = {
+			isa = PBXGroup;
+			children = (
+				23F1A8FD28B525B8005CA130 /* QuoteResponse.swift */,
+			);
+			path = Response;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,10 +190,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23F1A90428B52A36005CA130 /* Print+Precisely.swift in Sources */,
+				23F1A90028B52742005CA130 /* Api.swift in Sources */,
+				23F1A8FE28B525B8005CA130 /* QuoteResponse.swift in Sources */,
 				232A173C28B2C5FC00D6B86A /* PrivateKeyManager.swift in Sources */,
-				232A173E28B2D31600D6B86A /* InMemoryAccountStorage.swift in Sources */,
 				232A172F28B1FD7300D6B86A /* main.swift in Sources */,
 				232A173628B1FDA200D6B86A /* Base58.swift in Sources */,
+				23F1A90928B532A5005CA130 /* QuoteRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
