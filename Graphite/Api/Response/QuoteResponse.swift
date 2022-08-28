@@ -10,12 +10,12 @@ import Foundation
 struct QuoteResponse: Codable {
     let data: [DataResponse]?
     let timeTaken: Double?
-    let contextSlot: String?
+    let contextSlot: String
 
     struct DataResponse: Codable {
-        let inAmount: Int?
-        let outAmount: Int?
-        let amount: Int?
+        let inAmount: Int
+        let outAmount: Int
+        let amount: Int
         let otherAmountThreshold: Int?
         let outAmountWithSlippage: Int?
         let swapMode: String?

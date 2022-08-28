@@ -48,6 +48,7 @@ extension QuoteRequest {
     enum Mint: String {
         case sol = "So11111111111111111111111111111111111111112"
         case usdc = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+        case usdt = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
     }
 }
 
@@ -56,12 +57,20 @@ extension QuoteRequest {
 extension QuoteRequest {
     enum Amount {
         case sol(Int)
+        case usdc(Int)
+        case usdt(Int)
 
         var unitRepresentation: Int {
             switch self {
             case .sol(let amount):
                 // 1 SOL = 1 Billion Lamports
                 return amount * 1_000_000_000
+            case .usdc(let amount):
+                // 1 USDC = 1 Million units
+                return amount * 1_000_000
+            case .usdt(let amount):
+                // 1 USDT = 1 Million units
+                return amount * 1_000_000
             }
         }
     }
