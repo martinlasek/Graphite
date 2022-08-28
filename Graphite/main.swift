@@ -15,14 +15,13 @@ func handleSuccess(model: QuoteResponse) {
 
     print("⬆️ INPUT 1 SOL")
 
-    let usdtUnit = 1_000_000
     let solUnit: Double = 1_000_000_000
 
     let quoteRequestUSDT = QuoteRequest(
         inputMint: .usdt,
         outputMint: .sol,
-        amount: .usdt(dataResponse.outAmount / usdtUnit),
-        slippage: .percent(0.1)
+        amount: .usdt(.unit(dataResponse.outAmount)),
+        slippage: .percent(0)
     )
 
     guard let urlRequest = quoteRequestUSDT.createRequest() else {
@@ -46,8 +45,8 @@ func handleSuccess(model: QuoteResponse) {
 let quoteRequestSOL = QuoteRequest(
     inputMint: .sol,
     outputMint: .usdt,
-    amount: .sol(1),
-    slippage: .percent(0.1)
+    amount: .sol(.full(1)),
+    slippage: .percent(0)
 )
 
 if let urlRequest = quoteRequestSOL.createRequest() {
