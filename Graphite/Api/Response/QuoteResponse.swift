@@ -7,6 +7,8 @@
 
 import Foundation
 
+typealias MarketInfoResponse = QuoteResponse.MarketInfosResponse
+
 struct QuoteResponse: Codable {
     let data: [DataResponse]?
     let timeTaken: Double?

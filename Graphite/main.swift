@@ -14,16 +14,21 @@ let quoteRequest = QuoteRequest(
     slippage: .percent(0.5)
 )
 
+var swapRequest = SwapRequest(publicKey: "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA")
+
 if let urlRequest = quoteRequest.createRequest() {
     Api.send(request: urlRequest) { (result: Result<QuoteResponse, ApiError>) in
         switch result {
         case .success(let model):
-            print(model.contextSlot ?? "")
+
+            swapRequest.quote = model
+            swapRequest.handleSuccess(with: model)
         case .failure(let error):
             print("\(error.localizedDescription)")
         }
     }
 }
+
 
 // Keeps the programm running.
 RunLoop.main.run()
