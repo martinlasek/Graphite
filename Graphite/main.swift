@@ -71,23 +71,5 @@ if let urlRequest = quoteRequestSOL.createRequest() {
     }
 }
 
-
-
-//func findCheapestSwap(in quote: QuoteResponse) {
-//    guard let dataList = quote.data else {
-//        return
-//    }
-//
-//    // 1. find highest USDC output for SOL input
-//    // 2. find highest SOL output for USDC input
-//    // 3. check if USDC output from 2. is higher than USDC input from 1.
-//
-//    dataList.forEach { dataResponse in
-//        dataResponse.inAmount // SOL
-//        dataResponse.outAmount // USDT
-//
-//    }
-//}
-
 // Keeps the programm running.
 RunLoop.main.run()
