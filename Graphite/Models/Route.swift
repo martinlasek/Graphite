@@ -11,7 +11,7 @@ struct Route: Codable {
     let inAmount: Int?
     let outAmount: Int?
     let priceImpactPct: Double?
-    let marketInfo: [MarketInfoResponse]?
+    let marketInfo: [QuoteResponse.MarketInfoResponse]?
 
     enum CodingKeys: String, CodingKey {
         case inAmount = "inAmount"

@@ -13,7 +13,7 @@ func handleSuccess(model: QuoteResponse) {
         return
     }
 
-    print("⬆️ INPUT: 1 SOL / DEX: \(dataResponse.marketInfos?.first?.label ?? "")")
+    print("⬆️ INPUT: 1 SOL / DEX: \(dataResponse.marketInfos.first?.label ?? "")")
 
     let solUnit: Double = 1_000_000_000
 
@@ -36,7 +36,7 @@ func handleSuccess(model: QuoteResponse) {
             }
 
             let fullSol = Double(dataResponse.outAmount) / solUnit
-            print("⬇️ OUTPUT: \(fullSol) SOL / DEX: \(dataResponse.marketInfos?.first?.label ?? "")")
+            print("⬇️ OUTPUT: \(fullSol) SOL / DEX: \(dataResponse.marketInfos.first?.label ?? "")")
 
             if fullSol >= 1 {
                 let profit = fullSol-1

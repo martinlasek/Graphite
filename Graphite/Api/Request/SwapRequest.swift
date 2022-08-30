@@ -91,7 +91,7 @@ extension SwapRequest {
                 return nil
             }
 
-            self.route = quote.route
+            self.route = Route(inAmount: quote.inAmount, outAmount: quote.outAmount, priceImpactPct: quote.priceImpactPct, marketInfo: quote.marketInfos)
             self.userPublicKey = userPublicKey
             self.wrapUnwrapSOL = wrapUnwrapSOL
             self.feeAccount = feeAccount
