@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		062A9D8928BAD45400D949E4 /* SwapRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062A9D8828BAD45400D949E4 /* SwapRequest.swift */; };
+		06E488C028BC430E00294009 /* SwapResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488BF28BC430E00294009 /* SwapResponse.swift */; };
+		06E488C328BC521600294009 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488C228BC521600294009 /* Route.swift */; };
 		232A172F28B1FD7300D6B86A /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A172E28B1FD7300D6B86A /* main.swift */; };
 		232A173628B1FDA200D6B86A /* Base58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173528B1FDA200D6B86A /* Base58.swift */; };
 		232A173A28B28CD400D6B86A /* Solana in Frameworks */ = {isa = PBXBuildFile; productRef = 232A173928B28CD400D6B86A /* Solana */; };
@@ -30,6 +33,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		062A9D8828BAD45400D949E4 /* SwapRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRequest.swift; sourceTree = "<group>"; };
+		06E488BF28BC430E00294009 /* SwapResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapResponse.swift; sourceTree = "<group>"; };
+		06E488C228BC521600294009 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		232A172B28B1FD7300D6B86A /* Graphite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Graphite; sourceTree = BUILT_PRODUCTS_DIR; };
 		232A172E28B1FD7300D6B86A /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		232A173528B1FDA200D6B86A /* Base58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base58.swift; sourceTree = "<group>"; };
@@ -54,6 +60,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		06E488C128BC520A00294009 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				06E488C228BC521600294009 /* Route.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		232A172228B1FD7300D6B86A = {
 			isa = PBXGroup;
 			children = (
@@ -75,6 +89,7 @@
 		232A172D28B1FD7300D6B86A /* Graphite */ = {
 			isa = PBXGroup;
 			children = (
+				06E488C128BC520A00294009 /* Models */,
 				232A172E28B1FD7300D6B86A /* main.swift */,
 				23F1A90128B52884005CA130 /* Api */,
 				23F1A90228B52A2A005CA130 /* Utils */,
@@ -114,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				23F1A90828B532A5005CA130 /* QuoteRequest.swift */,
+				062A9D8828BAD45400D949E4 /* SwapRequest.swift */,
 			);
 			path = Request;
 			sourceTree = "<group>";
@@ -122,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				23F1A8FD28B525B8005CA130 /* QuoteResponse.swift */,
+				06E488BF28BC430E00294009 /* SwapResponse.swift */,
 			);
 			path = Response;
 			sourceTree = "<group>";
@@ -190,8 +207,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				062A9D8928BAD45400D949E4 /* SwapRequest.swift in Sources */,
 				23F1A90428B52A36005CA130 /* Print+Precisely.swift in Sources */,
 				23F1A90028B52742005CA130 /* Api.swift in Sources */,
+				06E488C328BC521600294009 /* Route.swift in Sources */,
+				06E488C028BC430E00294009 /* SwapResponse.swift in Sources */,
 				23F1A8FE28B525B8005CA130 /* QuoteResponse.swift in Sources */,
 				232A173C28B2C5FC00D6B86A /* PrivateKeyManager.swift in Sources */,
 				232A172F28B1FD7300D6B86A /* main.swift in Sources */,
