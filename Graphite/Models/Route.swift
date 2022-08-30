@@ -8,9 +8,15 @@
 import Foundation
 
 struct Route: Codable {
-
     let inAmount: Int?
     let outAmount: Int?
     let priceImpactPct: Double?
-    let marketInfos: [MarketInfoResponse]?
+    let marketInfo: [MarketInfoResponse]?
+
+    enum CodingKeys: String, CodingKey {
+        case inAmount = "inAmount"
+        case outAmount = "outAmount"
+        case priceImpactPct = "priceImpactPct"
+        case marketInfo = "marketInfos"
+    }
 }
