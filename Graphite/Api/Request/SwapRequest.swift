@@ -68,16 +68,6 @@ struct SwapRequest {
     }
 }
 
-//var request = URLRequest(url: url)
-//request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-//request.setValue("application/json", forHTTPHeaderField: "Accept")
-//request.httpMethod = "POST"
-//let parameters: [String: Any] = [
-//    "id": 13,
-//    "name": "Jack & Jill"
-//]
-//request.httpBody = parameters.percentEncoded()
-
 // MARK: - POST Body
 
 extension SwapRequest {
@@ -101,7 +91,7 @@ extension SwapRequest {
                 return nil
             }
 
-            self.route = Route(inAmount: quote.inAmount, outAmount: quote.outAmount, priceImpactPct: quote.priceImpactPct, marketInfos: quote.marketInfos)
+            self.route = quote.route
             self.userPublicKey = userPublicKey
             self.wrapUnwrapSOL = wrapUnwrapSOL
             self.feeAccount = feeAccount
