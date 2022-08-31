@@ -15,8 +15,6 @@ struct QuoteResponse: Codable {
     let contextSlot: String
 
     struct DataResponse: Codable {
-        let inAmount: Int
-        let outAmount: Int
         let amount: Int
         let otherAmountThreshold: Int?
         let outAmountWithSlippage: Int?
@@ -26,7 +24,7 @@ struct QuoteResponse: Codable {
         init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
 
-            self.amount = try values.decodeIfPresent(Int.self, forKey: .amount)
+            self.amount = try values.decode(Int.self, forKey: .amount)
             self.otherAmountThreshold = try values.decodeIfPresent(Int.self, forKey: .otherAmountThreshold)
             self.outAmountWithSlippage = try values.decodeIfPresent(Int.self, forKey: .outAmountWithSlippage)
             self.swapMode = try values.decodeIfPresent(String.self, forKey: .swapMode)

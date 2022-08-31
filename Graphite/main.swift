@@ -9,18 +9,21 @@ import Foundation
 
 func handleSuccess(model: QuoteResponse) {
 
-    guard let dataResponse = model.data?.first else {
+    guard
+        let dataResponse = model.data?.first,
+        let marketInfo = dataResponse.route.marketInfo?.first
+    else {
         return
     }
 
-    print("⬆️ INPUT: 1 SOL / DEX: \(dataResponse.marketInfos?.first?.label ?? "")")
+    print("⬆️ INPUT: 1 SOL / DEX: \(marketInfo.label ?? "")")
 
     let solUnit: Double = 1_000_000_000
 
     let quoteRequestUSDT = QuoteRequest(
         inputMint: .usdt,
         outputMint: .sol,
-        amount: .usdt(.unit(dataResponse.outAmount)),
+        amount: .usdt(.unit(marketInfo.outAmount ?? 0)),
         slippage: .percent(0)
     )
 
@@ -31,18 +34,22 @@ func handleSuccess(model: QuoteResponse) {
     Api.send(request: urlRequest) { (result: Result<QuoteResponse, ApiError>) in
         switch result {
         case .success(let model):
-            guard let dataResponse = model.data?.first else {
+            guard
+                let dataResponse = model.data?.first,
+                let marketInfo = dataResponse.route.marketInfo?.first,
+                let outAmount = marketInfo.outAmount
+            else {
                 return
             }
 
-            let fullSol = Double(dataResponse.outAmount) / solUnit
-            print("⬇️ OUTPUT: \(fullSol) SOL / DEX: \(dataResponse.marketInfos?.first?.label ?? "")")
+            let fullSol = Double(outAmount) / solUnit
+            print("⬇️ OUTPUT: \(fullSol) SOL / DEX: \(marketInfo.label ?? "")")
 
             if fullSol >= 1 {
-                let profit = fullSol-1
+                let profit = fullSol - 1
                 print("🤑 \(String(format: "%.9f", profit))")
             } else {
-                let loss = 1-fullSol
+                let loss = 1 - fullSol
 
                 print("🥵 \(String(format: "%.9f", loss))")
             }
