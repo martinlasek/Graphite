@@ -10,19 +10,17 @@ import Foundation
 struct SwapRequest {
     private let swapUrlString = "https://quote-api.jup.ag/v1/swap"
 
-    var quote: QuoteResponse?
     let publicKey: String
     let wrapUnwrapSOL: Bool
     let feeAccount: String?
 
-    init(quote: QuoteResponse? = nil, publicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
-        self.quote = quote
+    init(publicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
         self.publicKey = publicKey
         self.wrapUnwrapSOL = wrapUnwrapSOL
         self.feeAccount = feeAccount
     }
 
-    func createRequest(with quote: QuoteResponse?) -> URLRequest? {
+    func createRequest(with quote: QuoteResponse) -> URLRequest? {
         guard let urlComponents = URLComponents(string: swapUrlString) else {
             printError(self, "Could not create URLComponents with url: \(swapUrlString)")
             return nil
@@ -34,10 +32,12 @@ struct SwapRequest {
         }
 
         guard
-            let postBody = PostBody(quote: quote,
-                                    userPublicKey: self.publicKey,
-                                    wrapUnwrapSOL: self.wrapUnwrapSOL,
-                                    feeAccount: self.feeAccount)
+            let postBody = PostBody(
+                quote: quote,
+                userPublicKey: self.publicKey,
+                wrapUnwrapSOL: self.wrapUnwrapSOL,
+                feeAccount: self.feeAccount
+            )
         else {
             return nil
         }
@@ -48,23 +48,6 @@ struct SwapRequest {
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = try? JSONEncoder().encode(postBody)
         return urlRequest
-    }
-
-    func handleSuccess(with quote: QuoteResponse?) {
-        guard
-            let swapRequest = createRequest(with: quote)
-        else {
-            return
-        }
-
-        Api.send(request: swapRequest) { (result: Result<SwapResponse, ApiError>) in
-            switch result {
-            case .success(let model):
-                print(model)
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-            }
-        }
     }
 }
 
@@ -83,9 +66,9 @@ extension SwapRequest {
         /// This is the ATA account for the output token where the fee will be sent to. If you are swapping from SOL->USDC then this would be the USDC ATA you want to collect the fee.
         var feeAccount: String?
 
-        init?(quote: QuoteResponse?, userPublicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
+        init?(quote: QuoteResponse, userPublicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
             guard
-                let quote = quote?.data?[0]
+                let quote = quote.data?[0]
             else {
                 printError(Error.self, "Could not create POST body from QuoteResponse")
                 return nil
@@ -99,7 +82,7 @@ extension SwapRequest {
     }
 }
 
-// MARK: CodingKeys
+// MARK: - CodingKeys
 
 extension SwapRequest.PostBody: Encodable {
     enum CodingKeys: String, CodingKey {

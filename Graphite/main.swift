@@ -7,7 +7,27 @@
 
 import Foundation
 
-func handleSuccess(model: QuoteResponse) {
+func handleSwapSuccess(with quote: QuoteResponse) {
+
+    let swapRequest = SwapRequest(publicKey: "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA")
+
+    guard
+        let urlRequest = swapRequest.createRequest(with: quote)
+    else {
+        return
+    }
+
+    Api.send(request: urlRequest) { (result: Result<SwapResponse, ApiError>) in
+        switch result {
+        case .success(let model):
+            print(model.swapTransaction ?? "")
+        case .failure(let error):
+            print("\(error.localizedDescription)")
+        }
+    }
+}
+
+func handleQuoteSuccess(model: QuoteResponse) {
 
     guard let dataResponse = model.data?.first else {
         return
@@ -24,7 +44,9 @@ func handleSuccess(model: QuoteResponse) {
         slippage: .percent(0)
     )
 
-    guard let urlRequest = quoteRequestUSDT.createRequest() else {
+    guard
+        let urlRequest = quoteRequestUSDT.createRequest()
+    else {
         return
     }
 
@@ -60,15 +82,12 @@ let quoteRequestSOL = QuoteRequest(
     slippage: .percent(0)
 )
 
-var swapRequest = SwapRequest(publicKey: "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA")
-
 if let urlRequest = quoteRequestSOL.createRequest() {
     Api.send(request: urlRequest) { (result: Result<QuoteResponse, ApiError>) in
         switch result {
         case .success(let model):
-            handleSuccess(model: model)
-            swapRequest.quote = model
-            swapRequest.handleSuccess(with: model)
+            handleQuoteSuccess(model: model)
+            handleSwapSuccess(with: model)
         case .failure(let error):
             print("\(error.localizedDescription)")
         }
