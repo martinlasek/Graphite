@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Solana
 
 struct SwapRequest {
     private let swapUrlString = "https://quote-api.jup.ag/v1/swap"
@@ -60,7 +61,9 @@ struct SwapRequest {
         Api.send(request: swapRequest) { (result: Result<SwapResponse, ApiError>) in
             switch result {
             case .success(let model):
-                print(model)
+                print(model.setupTransaction)
+                print(model.swapTransaction)
+                print(model.cleanupTransaction)
             case .failure(let error):
                 print("\(error.localizedDescription)")
             }
