@@ -62,13 +62,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		06E488C128BC520A00294009 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
 		232A172228B1FD7300D6B86A = {
 			isa = PBXGroup;
 			children = (
@@ -90,7 +83,6 @@
 		232A172D28B1FD7300D6B86A /* Graphite */ = {
 			isa = PBXGroup;
 			children = (
-				06E488C128BC520A00294009 /* Models */,
 				232A172E28B1FD7300D6B86A /* GraphiteController.swift */,
 				23F1A90128B52884005CA130 /* Api */,
 				23F1A90228B52A2A005CA130 /* Utils */,

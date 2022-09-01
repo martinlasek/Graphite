@@ -21,17 +21,14 @@ struct GraphiteController {
             slippage: .percent(0)
         )
 
-        let quoteSOLResponse = await JupiterApi.fetchQuote(for: quoteRequestSOL)
+        let fetchSOLQuoteResponse = await JupiterApi.fetchQuote(for: quoteRequestSOL)
 
-        guard case .success(let modelSOL) = quoteSOLResponse else {
+        guard
+            case .success(let quoteSOLResponse) = fetchSOLQuoteResponse,
+            let dataSolResponse = quoteSOLResponse.data?.first
+        else {
             return
         }
-
-        guard let dataSolResponse = modelSOL.data?.first else {
-            return
-        }
-
-        let solUnit: Double = 1_000_000_000
 
         let quoteRequestUSDT = QuoteRequest(
             inputMint: .usdt,
@@ -42,14 +39,14 @@ struct GraphiteController {
 
         let quoteUSDTResponse = await JupiterApi.fetchQuote(for: quoteRequestUSDT)
 
-        guard case .success(let modelUSDT) = quoteUSDTResponse else {
+        guard
+            case .success(let modelUSDT) = quoteUSDTResponse,
+            let dataUSDTResponse = modelUSDT.data?.first
+        else {
             return
         }
 
-        guard let dataUSDTResponse = modelUSDT.data?.first else {
-            return
-        }
-
+        let solUnit: Double = 1_000_000_000
         let fullSol = Double(dataUSDTResponse.outAmount) / solUnit
 
         print("⬆️ INPUT:\t 1 SOL / DEX: \(dataSolResponse.marketInfos.first?.label ?? "")")
@@ -74,5 +71,9 @@ struct GraphiteController {
         }
 
         print("🔄 SwapTranswer:\t \(String(describing: swapModel.swapTransaction)) SOL / DEX: \(dataUSDTResponse.marketInfos.first?.label ?? "")")
+    }
+
+    private func fetchQuote() async {
+
     }
 }
