@@ -7,20 +7,22 @@
 
 import Foundation
 
-struct SwapRequest {
+struct SwapRequest: RequestGenerator {
     private let swapUrlString = "https://quote-api.jup.ag/v1/swap"
 
-    let publicKey: String
-    let wrapUnwrapSOL: Bool
-    let feeAccount: String?
+    private let quoteResponse: QuoteResponse
+    private let publicKey: String
+    private let wrapUnwrapSOL: Bool
+    private let feeAccount: String?
 
-    init(publicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
+    init(quoteResponse: QuoteResponse, publicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
+        self.quoteResponse = quoteResponse
         self.publicKey = publicKey
         self.wrapUnwrapSOL = wrapUnwrapSOL
         self.feeAccount = feeAccount
     }
 
-    func createRequest(with quote: QuoteResponse) -> URLRequest? {
+    func createRequest() -> URLRequest? {
         guard let urlComponents = URLComponents(string: swapUrlString) else {
             printError(self, "Could not create URLComponents with url: \(swapUrlString)")
             return nil
@@ -33,7 +35,7 @@ struct SwapRequest {
 
         guard
             let postBody = PostBody(
-                quote: quote,
+                quote: quoteResponse,
                 userPublicKey: self.publicKey,
                 wrapUnwrapSOL: self.wrapUnwrapSOL,
                 feeAccount: self.feeAccount
@@ -57,7 +59,7 @@ extension SwapRequest {
 
     struct PostBody {
         /// Route provided in the `QuoteResponse.MarketInfoResponse`
-        var route: Route
+        var route: RouteRequest
         /// The public key to be used for the swap
         var userPublicKey: String
         /// Auto wrap and unwrap SOL. Default is `true`
@@ -74,7 +76,7 @@ extension SwapRequest {
                 return nil
             }
 
-            self.route = Route(inAmount: quote.inAmount, outAmount: quote.outAmount, priceImpactPct: quote.priceImpactPct, marketInfo: quote.marketInfos)
+            self.route = RouteRequest(inAmount: quote.inAmount, outAmount: quote.outAmount, priceImpactPct: quote.priceImpactPct, marketInfo: quote.marketInfos)
             self.userPublicKey = userPublicKey
             self.wrapUnwrapSOL = wrapUnwrapSOL
             self.feeAccount = feeAccount

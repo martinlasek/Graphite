@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct QuoteRequest {
+struct QuoteRequest: RequestGenerator {
     private let quoteUrlString = "https://quote-api.jup.ag/v1/quote"
 
     let inputMint: Mint
