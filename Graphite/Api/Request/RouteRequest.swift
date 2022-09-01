@@ -1,5 +1,5 @@
 //
-//  Route.swift
+//  RouteRequest.swift
 //  Graphite
 //
 //  Created by Daniel Stewart on 8/28/22.
@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct Route: Codable {
+struct RouteRequest: Codable {
     let inAmount: Int?
     let outAmount: Int?
     let priceImpactPct: Double?
-    let marketInfo: [MarketInfoResponse]?
+    let marketInfo: [QuoteResponse.MarketInfoResponse]?
 
     enum CodingKeys: String, CodingKey {
         case inAmount = "inAmount"
