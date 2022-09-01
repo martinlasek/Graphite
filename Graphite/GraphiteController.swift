@@ -13,16 +13,16 @@ struct GraphiteController {
     /// The entry point of the application.
     static func main() async throws {
 
-        // MARK: - Quote
+        // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
 
-        let quoteRequestSOL = QuoteRequest(
+        let quoteRequestUSDT = QuoteRequest(
             inputMint: .sol,
             outputMint: .usdt,
-            inputAmount: .sol(.full(1)),
+            inputAmount: .full(1),
             slippage: .percent(0)
         )
 
-        let fetchSOLQuoteResponse = await JupiterApi.fetchQuote(for: quoteRequestSOL)
+        let fetchSOLQuoteResponse = await JupiterApi.fetchQuote(for: quoteRequestUSDT)
 
         guard
             case .success(let quoteSOLResponse) = fetchSOLQuoteResponse,
@@ -31,35 +31,24 @@ struct GraphiteController {
             return
         }
 
-        let quoteRequestUSDT = QuoteRequest(
+        // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
+
+        let quoteRequestSOL = QuoteRequest(
             inputMint: .usdt,
             outputMint: .sol,
-            inputAmount: .usdt(.unit(dataSolResponse.outAmount)),
+            inputAmount: .unit(dataSolResponse.outAmount),
             slippage: .percent(0)
         )
 
-        let quoteUSDTResponse = await JupiterApi.fetchQuote(for: quoteRequestUSDT)
+        let fetchUSDTQuoteResponse = await JupiterApi.fetchQuote(for: quoteRequestSOL)
 
         guard
-            case .success(let modelUSDT) = quoteUSDTResponse,
-            let dataUSDTResponse = modelUSDT.data.first
+            case .success(let quoteUSDTResponse) = fetchUSDTQuoteResponse
         else {
             return
         }
 
-        let solUnit: Double = 1_000_000_000
-        let fullSol = Double(dataUSDTResponse.outAmount) / solUnit
-
-        print("⬆️ INPUT:\t 1 SOL / DEX: \(dataSolResponse.marketInfos.first?.label ?? "")")
-        print("⬇️ OUTPUT:\t \(fullSol) SOL / DEX: \(dataUSDTResponse.marketInfos.first?.label ?? "")")
-
-        if fullSol >= 1 {
-            let profit = fullSol-1
-            print("🤑 \(String(format: "%.9f", profit))")
-        } else {
-            let loss = 1-fullSol
-            print("🥵 \(String(format: "%.9f", loss))")
-        }
+        self.outputQuoteResult(for: quoteSOLResponse, and: quoteUSDTResponse)
 
         // MARK: - Swap
 
@@ -71,11 +60,29 @@ struct GraphiteController {
             return
         }
 
-        print("🔄 SwapTranswer:\t \(String(describing: swapModel.swapTransaction)) SOL / DEX: \(dataUSDTResponse.marketInfos.first?.label ?? "")")
-
+        print("🔄 SwapTranswer:\t \(String(describing: swapModel.swapTransaction ?? ""))")
     }
 
-    private static func fetchBestSwap(for input: CryptoCurrency, and output: CryptoCurrency) async {
-        
+    private static func outputQuoteResult(for inputQuote: QuoteResponse, and outputQuote: QuoteResponse) {
+        guard
+            let inputMarketResponse = inputQuote.data.first?.marketInfos.first,
+            let outputMarketResponse = outputQuote.data.first?.marketInfos.first
+        else {
+            return
+        }
+
+        let fullSol = Double(outputMarketResponse.outAmount) / CryptoCurrency.sol.decimals
+
+        let inAmount = CryptoAmount.unit(inputMarketResponse.inAmount)
+        print("⬆️ INPUT:\t \(inAmount.getFullAmount(for: .sol)) SOL / DEX: \(inputMarketResponse.label ?? "")")
+        print("⬇️ OUTPUT:\t \(fullSol) SOL / DEX: \(outputMarketResponse.label ?? "")")
+
+        if fullSol >= 1 {
+            let profit = fullSol-1
+            print("🤑 \(String(format: "%.9f", profit))")
+        } else {
+            let loss = 1-fullSol
+            print("🥵 \(String(format: "%.9f", loss))")
+        }
     }
 }

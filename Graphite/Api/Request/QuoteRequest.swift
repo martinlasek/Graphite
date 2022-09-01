@@ -10,9 +10,9 @@ import Foundation
 struct QuoteRequest: RequestGenerator {
     private let quoteUrlString = "https://quote-api.jup.ag/v1/quote"
 
-    let inputMint: CryptoCurrency.Address
-    let outputMint: CryptoCurrency.Address
-    let inputAmount: CryptoCurrency
+    let inputMint: CryptoCurrency
+    let outputMint: CryptoCurrency
+    let inputAmount: CryptoAmount
     let slippage: Slippage
 
     func createRequest() -> URLRequest? {
@@ -21,12 +21,12 @@ struct QuoteRequest: RequestGenerator {
             return nil
         }
 
-        let amountString = String(describing: inputAmount.unitRepresentation)
+        let amountString = String(describing: inputAmount.getUnitAmount(for: inputMint))
         let slippageString = String(describing: slippage.value)
 
         let queryItems = [
-            URLQueryItem(name: "inputMint", value: inputMint.rawValue),
-            URLQueryItem(name: "outputMint", value: outputMint.rawValue),
+            URLQueryItem(name: "inputMint", value: inputMint.address),
+            URLQueryItem(name: "outputMint", value: outputMint.address),
             URLQueryItem(name: "amount", value: amountString),
             URLQueryItem(name: "slippage", value: slippageString)
         ]
