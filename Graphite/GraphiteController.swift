@@ -1,5 +1,5 @@
 //
-//  main.swift
+//  GraphiteController.swift
 //  Graphite
 //
 //  Created by Martin Lasek on 8/20/22.
@@ -10,6 +10,7 @@ import Foundation
 @main
 struct GraphiteController {
 
+    /// The entry point of the application.
     static func main() async throws {
 
         // MARK: - Quote
@@ -17,7 +18,7 @@ struct GraphiteController {
         let quoteRequestSOL = QuoteRequest(
             inputMint: .sol,
             outputMint: .usdt,
-            amount: .sol(.full(1)),
+            inputAmount: .sol(.full(1)),
             slippage: .percent(0)
         )
 
@@ -25,7 +26,7 @@ struct GraphiteController {
 
         guard
             case .success(let quoteSOLResponse) = fetchSOLQuoteResponse,
-            let dataSolResponse = quoteSOLResponse.data?.first
+            let dataSolResponse = quoteSOLResponse.data.first
         else {
             return
         }
@@ -33,7 +34,7 @@ struct GraphiteController {
         let quoteRequestUSDT = QuoteRequest(
             inputMint: .usdt,
             outputMint: .sol,
-            amount: .usdt(.unit(dataSolResponse.outAmount)),
+            inputAmount: .usdt(.unit(dataSolResponse.outAmount)),
             slippage: .percent(0)
         )
 
@@ -41,7 +42,7 @@ struct GraphiteController {
 
         guard
             case .success(let modelUSDT) = quoteUSDTResponse,
-            let dataUSDTResponse = modelUSDT.data?.first
+            let dataUSDTResponse = modelUSDT.data.first
         else {
             return
         }
@@ -71,9 +72,10 @@ struct GraphiteController {
         }
 
         print("🔄 SwapTranswer:\t \(String(describing: swapModel.swapTransaction)) SOL / DEX: \(dataUSDTResponse.marketInfos.first?.label ?? "")")
+
     }
 
-    private func fetchQuote() async {
-
+    private static func fetchBestSwap(for input: CryptoCurrency, and output: CryptoCurrency) async {
+        
     }
 }

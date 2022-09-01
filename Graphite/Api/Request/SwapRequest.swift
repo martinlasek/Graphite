@@ -21,7 +21,13 @@ struct SwapRequest: Codable, RequestGenerator {
     var feeAccount: String?
 
     init(dataResponse: QuoteResponse.DataResponse, userPublicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
-        self.route = RouteRequest(inAmount: dataResponse.inAmount, outAmount: dataResponse.outAmount, priceImpactPct: dataResponse.priceImpactPct, marketInfo: dataResponse.marketInfos)
+        self.route = RouteRequest(
+            inAmount: dataResponse.inAmount,
+            outAmount: dataResponse.outAmount,
+            priceImpactPct: dataResponse.priceImpactPct,
+            marketInfo: dataResponse.marketInfos
+        )
+
         self.userPublicKey = userPublicKey
         self.wrapUnwrapSOL = wrapUnwrapSOL
         self.feeAccount = feeAccount
@@ -44,14 +50,5 @@ struct SwapRequest: Codable, RequestGenerator {
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = try? JSONEncoder().encode(self)
         return urlRequest
-    }
-}
-
-// MARK: - POST Body
-
-extension SwapRequest {
-
-    struct PostBody: Encodable {
-
     }
 }

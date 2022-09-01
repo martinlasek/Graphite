@@ -8,8 +8,8 @@
 import Foundation
 
 struct QuoteResponse: Codable {
-    let data: [DataResponse]?
-    let timeTaken: Double?
+    let data: [DataResponse]
+    let timeTaken: Double
     let contextSlot: String
 
     struct DataResponse: Codable {

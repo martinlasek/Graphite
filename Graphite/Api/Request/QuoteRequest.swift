@@ -10,9 +10,9 @@ import Foundation
 struct QuoteRequest: RequestGenerator {
     private let quoteUrlString = "https://quote-api.jup.ag/v1/quote"
 
-    let inputMint: Mint
-    let outputMint: Mint
-    let amount: Amount
+    let inputMint: CryptoCurrency.Address
+    let outputMint: CryptoCurrency.Address
+    let inputAmount: CryptoCurrency
     let slippage: Slippage
 
     func createRequest() -> URLRequest? {
@@ -21,7 +21,7 @@ struct QuoteRequest: RequestGenerator {
             return nil
         }
 
-        let amountString = String(describing: amount.unitRepresentation)
+        let amountString = String(describing: inputAmount.unitRepresentation)
         let slippageString = String(describing: slippage.value)
 
         let queryItems = [
@@ -39,63 +39,6 @@ struct QuoteRequest: RequestGenerator {
         }
 
         return URLRequest(url: url)
-    }
-}
-
-// MARK: - Mint
-
-extension QuoteRequest {
-    enum Mint: String {
-        case sol = "So11111111111111111111111111111111111111112"
-        case usdc = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-        case usdt = "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
-    }
-}
-
-// MARK: - Amount Conversioon
-
-extension QuoteRequest {
-    enum Amount {
-        enum Precision {
-            case unit(Int)
-            case full(Double)
-        }
-
-        case sol(Precision)
-        case usdc(Precision)
-        case usdt(Precision)
-
-        var unitRepresentation: Int {
-            switch self {
-            case .sol(let precision):
-
-                switch precision {
-                case .full(let amount):
-                    // 1 SOL = 1 Billion Lamports
-                    return Int(amount * 1_000_000_000)
-                case .unit(let amount):
-                    return amount
-                }
-
-            case .usdc(let precision):
-                switch precision {
-                case .full(let amount):
-                    // 1 USDC = 1 Million units
-                    return Int(amount * 1_000_000)
-                case .unit(let amount):
-                    return amount
-                }
-
-            case .usdt(let precision):
-                switch precision {
-                case .full(let amount):
-                    // 1 USDT = 1 Million units
-                    return Int(amount * 1_000_000)
-                case .unit(let amount):
-                    return amount
-                }
-            }
-        }
     }
 }
 
