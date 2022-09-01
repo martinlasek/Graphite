@@ -63,6 +63,7 @@ struct GraphiteController {
         print("🔄 SwapTranswer:\t \(String(describing: swapModel.swapTransaction ?? ""))")
     }
 
+    /// Logs the input amount and output amount for a swap and also prints profitability.
     private static func outputQuoteResult(for inputQuote: QuoteResponse, and outputQuote: QuoteResponse) {
         guard
             let inputMarketResponse = inputQuote.data.first?.marketInfos.first,
