@@ -65,7 +65,7 @@ struct GraphiteController {
 
         // MARK: - Swap
 
-        let swapRequest = SwapRequest(quoteResponse: modelSOL, publicKey: "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA")
+        let swapRequest = SwapRequest(dataResponse: dataSolResponse, userPublicKey: "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA")
 
         let swapResponse = await JupiterApi.fetchSwap(for: swapRequest)
 
@@ -76,4 +76,3 @@ struct GraphiteController {
         print("🔄 SwapTranswer:\t \(String(describing: swapModel.swapTransaction)) SOL / DEX: \(dataUSDTResponse.marketInfos.first?.label ?? "")")
     }
 }
-
