@@ -26,7 +26,7 @@ struct SwapRequest: Codable, RequestGenerator {
             inAmount: dataResponse.inAmount,
             outAmount: dataResponse.outAmount,
             priceImpactPct: dataResponse.priceImpactPct,
-            marketInfo: dataResponse.marketInfos
+            marketInfos: dataResponse.marketInfos
         )
 
         self.userPublicKey = userPublicKey

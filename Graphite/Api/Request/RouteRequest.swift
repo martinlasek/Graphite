@@ -8,15 +8,8 @@
 import Foundation
 
 struct RouteRequest: Codable {
-    let inAmount: Int?
-    let outAmount: Int?
-    let priceImpactPct: Double?
-    let marketInfo: [QuoteResponse.MarketInfoResponse]?
-
-    enum CodingKeys: String, CodingKey {
-        case inAmount = "inAmount"
-        case outAmount = "outAmount"
-        case priceImpactPct = "priceImpactPct"
-        case marketInfo = "marketInfos"
-    }
+    let inAmount: Int
+    let outAmount: Int
+    let priceImpactPct: Double
+    let marketInfos: [QuoteResponse.MarketInfoResponse]
 }
