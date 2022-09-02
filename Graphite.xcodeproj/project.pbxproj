@@ -12,12 +12,12 @@
 		06E488C328BC521600294009 /* RouteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488C228BC521600294009 /* RouteRequest.swift */; };
 		232A172F28B1FD7300D6B86A /* GraphiteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A172E28B1FD7300D6B86A /* GraphiteController.swift */; };
 		232A173628B1FDA200D6B86A /* Base58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173528B1FDA200D6B86A /* Base58.swift */; };
-		232A173A28B28CD400D6B86A /* Solana in Frameworks */ = {isa = PBXBuildFile; productRef = 232A173928B28CD400D6B86A /* Solana */; };
 		232A173C28B2C5FC00D6B86A /* PrivateKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173B28B2C5FC00D6B86A /* PrivateKeyManager.swift */; };
 		23EA0CA428C012A40022DC1A /* JupiterApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EA0CA328C012A40022DC1A /* JupiterApi.swift */; };
 		23EA0CA728C13B0D0022DC1A /* CryptoCurrency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EA0CA628C13B0D0022DC1A /* CryptoCurrency.swift */; };
 		23EA0CA928C15C540022DC1A /* CryptoAmount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EA0CA828C15C540022DC1A /* CryptoAmount.swift */; };
 		23EA0CAB28C1BC150022DC1A /* InMemoryAccountStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EA0CAA28C1BC150022DC1A /* InMemoryAccountStorage.swift */; };
+		23EA0CAE28C236CC0022DC1A /* SolanaSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 23EA0CAD28C236CC0022DC1A /* SolanaSwift */; };
 		23F1A8FE28B525B8005CA130 /* QuoteResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F1A8FD28B525B8005CA130 /* QuoteResponse.swift */; };
 		23F1A90028B52742005CA130 /* Api.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F1A8FF28B52742005CA130 /* Api.swift */; };
 		23F1A90428B52A36005CA130 /* Print+Precisely.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23F1A90328B52A36005CA130 /* Print+Precisely.swift */; };
@@ -61,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				232A173A28B28CD400D6B86A /* Solana in Frameworks */,
+				23EA0CAE28C236CC0022DC1A /* SolanaSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,7 +172,7 @@
 			);
 			name = Graphite;
 			packageProductDependencies = (
-				232A173928B28CD400D6B86A /* Solana */,
+				23EA0CAD28C236CC0022DC1A /* SolanaSwift */,
 			);
 			productName = Graphite;
 			productReference = 232A172B28B1FD7300D6B86A /* Graphite */;
@@ -203,7 +203,7 @@
 			);
 			mainGroup = 232A172228B1FD7300D6B86A;
 			packageReferences = (
-				232A173828B28CD400D6B86A /* XCRemoteSwiftPackageReference "Solana.Swift" */,
+				23EA0CAC28C236CC0022DC1A /* XCRemoteSwiftPackageReference "solana-swift" */,
 			);
 			productRefGroup = 232A172C28B1FD7300D6B86A /* Products */;
 			projectDirPath = "";
@@ -394,21 +394,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		232A173828B28CD400D6B86A /* XCRemoteSwiftPackageReference "Solana.Swift" */ = {
+		23EA0CAC28C236CC0022DC1A /* XCRemoteSwiftPackageReference "solana-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/metaplex-foundation/Solana.Swift.git";
+			repositoryURL = "https://github.com/p2p-org/solana-swift.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		232A173928B28CD400D6B86A /* Solana */ = {
+		23EA0CAD28C236CC0022DC1A /* SolanaSwift */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 232A173828B28CD400D6B86A /* XCRemoteSwiftPackageReference "Solana.Swift" */;
-			productName = Solana;
+			package = 23EA0CAC28C236CC0022DC1A /* XCRemoteSwiftPackageReference "solana-swift" */;
+			productName = SolanaSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

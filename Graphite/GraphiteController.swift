@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Solana
+import SolanaSwift
 
 @main
 struct GraphiteController {
@@ -94,36 +94,32 @@ struct GraphiteController {
     }
 
     private static func getSolanaBalance() async {
-        let accountStorage = InMemoryAccountStorage()
-        let network = NetworkingRouter(endpoint: .mainnetBetaSolana)
-
         guard
             let secretKey = PrivateKeyManager.getPrivateKey(),
-            let account = Account(secretKey: Data(secretKey))
+            let account = try? Account(secretKey: Data(secretKey))
         else {
             printError(self, "Could not create account.")
             return
         }
 
-        let _ = accountStorage.save(account)
+        //accountStorage.save(account)
 
-        let solana = Solana(router: network, accountStorage: accountStorage)
+        let endpoint = APIEndPoint(
+            address: "https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
+            network: .mainnetBeta
+        )
 
-        guard let balance: UInt64 = (try? await withCheckedThrowingContinuation { continuation in
-            solana.api.getBalance { result in
-                switch result {
-                case .success(let amount):
-                    return continuation.resume(returning: amount)
-                case .failure:
-                    return continuation.resume(throwing: SolanaError.couldNotRetriveAccountInfo)
-                }
-            }
-        }) else {
+        // To get block height
+        let apiClient = JSONRPCAPIClient(endpoint: endpoint)
+
+        // To get balance of the current account
+        let accountEncoded = account.publicKey.base58EncodedString
+        guard
+            let balance = try? await apiClient.getBalance(account: accountEncoded, commitment: "recent")
+        else {
             return
         }
 
-        print()
         print("💰 Solana Balance: \(CryptoAmount.unit(Int(balance)).getFullAmount(for: .sol))")
-        print("\n")
     }
 }

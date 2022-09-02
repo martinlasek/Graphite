@@ -10,21 +10,21 @@
       }
     },
     {
-      "identity" : "solana.swift",
+      "identity" : "solana-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/metaplex-foundation/Solana.Swift.git",
+      "location" : "https://github.com/p2p-org/solana-swift.git",
       "state" : {
-        "revision" : "d9f6bc2e9878f476b3bc06685cadc8cc14e578e4",
-        "version" : "1.2.0"
+        "revision" : "aeb3ec10d84bd8bd5441deb6abac5f829ccd9261",
+        "version" : "2.4.0"
       }
     },
     {
-      "identity" : "starscream",
+      "identity" : "task-retrying-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/daltoniam/Starscream.git",
+      "location" : "https://github.com/bigearsenal/task-retrying-swift.git",
       "state" : {
-        "revision" : "df8d82047f6654d8e4b655d1b1525c64e1059d21",
-        "version" : "4.0.4"
+        "revision" : "645eaaf207a6f39ab4b469558d916ae23df199b5",
+        "version" : "1.0.3"
       }
     },
     {
