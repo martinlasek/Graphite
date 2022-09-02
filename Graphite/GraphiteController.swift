@@ -59,7 +59,10 @@ struct GraphiteController {
             return
         }
 
-        print("🔄 SwapTranswer:\t \(String(describing: swapModel.swapTransaction ?? ""))")
+        print("🔨 SetupTransaction: \(swapModel.setupTransaction ?? "")")
+        print("🔄 SwapTransaction:\t \(swapModel.swapTransaction ?? "")")
+        print("🧹 CleanupTransaction:\t \(swapModel.cleanupTransaction ?? "")")
+
     }
 
     /// Logs the input amount and output amount for a swap and also prints profitability.
