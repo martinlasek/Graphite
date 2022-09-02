@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Solana
 
 @main
 struct GraphiteController {
@@ -18,7 +19,7 @@ struct GraphiteController {
         let quoteRequestUSDT = QuoteRequest(
             inputMint: .sol,
             outputMint: .usdt,
-            inputAmount: .full(5),
+            inputAmount: .full(1),
             slippage: .percent(0)
         )
 
@@ -63,6 +64,7 @@ struct GraphiteController {
         print("🔄 SwapTransaction:\t \(swapModel.swapTransaction ?? "")")
         print("🧹 CleanupTransaction:\t \(swapModel.cleanupTransaction ?? "")")
 
+        await getSolanaBalance()
     }
 
     /// Logs the input amount and output amount for a swap and also prints profitability.
@@ -89,5 +91,39 @@ struct GraphiteController {
             print("🥵 LOSS:\t \(String(format: "%.9f", diff))")
         }
         print("-----\n")
+    }
+
+    private static func getSolanaBalance() async {
+        let accountStorage = InMemoryAccountStorage()
+        let network = NetworkingRouter(endpoint: .mainnetBetaSolana)
+
+        guard
+            let secretKey = PrivateKeyManager.getPrivateKey(),
+            let account = Account(secretKey: Data(secretKey))
+        else {
+            printError(self, "Could not create account.")
+            return
+        }
+
+        let _ = accountStorage.save(account)
+
+        let solana = Solana(router: network, accountStorage: accountStorage)
+
+        guard let balance: UInt64 = (try? await withCheckedThrowingContinuation { continuation in
+            solana.api.getBalance { result in
+                switch result {
+                case .success(let amount):
+                    return continuation.resume(returning: amount)
+                case .failure:
+                    return continuation.resume(throwing: SolanaError.couldNotRetriveAccountInfo)
+                }
+            }
+        }) else {
+            return
+        }
+
+        print()
+        print("💰 Solana Balance: \(CryptoAmount.unit(Int(balance)).getFullAmount(for: .sol))")
+        print("\n")
     }
 }
