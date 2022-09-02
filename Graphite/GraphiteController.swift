@@ -18,7 +18,7 @@ struct GraphiteController {
         let quoteRequestUSDT = QuoteRequest(
             inputMint: .sol,
             outputMint: .usdt,
-            inputAmount: .full(1),
+            inputAmount: .full(5),
             slippage: .percent(0)
         )
 
@@ -48,12 +48,11 @@ struct GraphiteController {
             return
         }
 
-        self.outputQuoteResult(for: quoteSOLResponse, and: quoteUSDTResponse)
+        self.determineProfitOrLoss(using: quoteSOLResponse, and: quoteUSDTResponse)
 
         // MARK: - Swap
 
         let swapRequest = SwapRequest(dataResponse: dataSolResponse, userPublicKey: "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA")
-
         let swapResponse = await JupiterApi.fetchSwap(for: swapRequest)
 
         guard case .success(let swapModel) = swapResponse else {
@@ -64,7 +63,7 @@ struct GraphiteController {
     }
 
     /// Logs the input amount and output amount for a swap and also prints profitability.
-    private static func outputQuoteResult(for inputQuote: QuoteResponse, and outputQuote: QuoteResponse) {
+    private static func determineProfitOrLoss(using inputQuote: QuoteResponse, and outputQuote: QuoteResponse) {
         guard
             let inputMarketResponse = inputQuote.data.first?.marketInfos.first,
             let outputMarketResponse = outputQuote.data.first?.marketInfos.first
@@ -72,18 +71,20 @@ struct GraphiteController {
             return
         }
 
-        let fullSol = Double(outputMarketResponse.outAmount) / CryptoCurrency.sol.decimals
+        let inAmount = CryptoAmount.unit(inputMarketResponse.inAmount).getFullAmount(for: .sol)
+        let outAmount = CryptoAmount.unit(outputMarketResponse.outAmount).getFullAmount(for: .sol)
 
-        let inAmount = CryptoAmount.unit(inputMarketResponse.inAmount)
-        print("⬆️ INPUT:\t \(inAmount.getFullAmount(for: .sol)) SOL / DEX: \(inputMarketResponse.label ?? "")")
-        print("⬇️ OUTPUT:\t \(fullSol) SOL / DEX: \(outputMarketResponse.label ?? "")")
+        print("\n-----")
+        print("⬆️ INPUT:\t \(inAmount) SOL \t\t\t DEX: \(inputMarketResponse.label ?? "")")
+        print("⬇️ OUTPUT:\t \(outAmount) SOL \t DEX: \(outputMarketResponse.label ?? "")")
 
-        if fullSol >= 1 {
-            let profit = fullSol-1
-            print("🤑 \(String(format: "%.9f", profit))")
+        if outAmount >= inAmount {
+            let diff = outAmount - inAmount
+            print("🤑 PROFIT:\t \(String(format: "%.9f", diff))")
         } else {
-            let loss = 1-fullSol
-            print("🥵 \(String(format: "%.9f", loss))")
+            let diff = inAmount - outAmount
+            print("🥵 LOSS:\t \(String(format: "%.9f", diff))")
         }
+        print("-----\n")
     }
 }
