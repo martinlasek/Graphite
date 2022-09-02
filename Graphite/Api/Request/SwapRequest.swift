@@ -8,22 +8,33 @@
 import Foundation
 import Solana
 
-struct SwapRequest {
-    private let swapUrlString = "https://quote-api.jup.ag/v1/swap"
+struct SwapRequest: Codable, RequestGenerator {
+    private var swapUrlString = "https://quote-api.jup.ag/v1/swap"
 
-    var quote: QuoteResponse?
-    let publicKey: String
-    let wrapUnwrapSOL: Bool
-    let feeAccount: String?
+    /// Route provided in the `QuoteResponse.MarketInfoResponse`
+    var route: RouteRequest
+    /// The public key to be used for the swap
+    var userPublicKey: String
+    /// Auto wrap and unwrap SOL. Default is `true`
+    var wrapUnwrapSOL: Bool
+    /// Fee Account is optional. feeBps must have been passed in `QuoteRequest`.
+    /// This is the ATA account for the output token where the fee will be sent to. If you are swapping from SOL->USDC then this would be the USDC ATA you want to collect the fee.
+    var feeAccount: String?
 
-    init(quote: QuoteResponse? = nil, publicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
-        self.quote = quote
-        self.publicKey = publicKey
+    init(dataResponse: QuoteResponse.DataResponse, userPublicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
+        self.route = RouteRequest(
+            inAmount: dataResponse.inAmount,
+            outAmount: dataResponse.outAmount,
+            priceImpactPct: dataResponse.priceImpactPct,
+            marketInfos: dataResponse.marketInfos
+        )
+
+        self.userPublicKey = userPublicKey
         self.wrapUnwrapSOL = wrapUnwrapSOL
         self.feeAccount = feeAccount
     }
 
-    func createRequest(with quote: QuoteResponse?) -> URLRequest? {
+    func createRequest() -> URLRequest? {
         guard let urlComponents = URLComponents(string: swapUrlString) else {
             printError(self, "Could not create URLComponents with url: \(swapUrlString)")
             return nil
@@ -34,81 +45,11 @@ struct SwapRequest {
             return nil
         }
 
-        guard
-            let postBody = PostBody(quote: quote,
-                                    userPublicKey: self.publicKey,
-                                    wrapUnwrapSOL: self.wrapUnwrapSOL,
-                                    feeAccount: self.feeAccount)
-        else {
-            return nil
-        }
-
         var urlRequest = URLRequest(url: url)
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
         urlRequest.httpMethod = "POST"
-        urlRequest.httpBody = try? JSONEncoder().encode(postBody)
+        urlRequest.httpBody = try? JSONEncoder().encode(self)
         return urlRequest
-    }
-
-    func handleSuccess(with quote: QuoteResponse?) {
-        guard
-            let swapRequest = createRequest(with: quote)
-        else {
-            return
-        }
-
-        Api.send(request: swapRequest) { (result: Result<SwapResponse, ApiError>) in
-            switch result {
-            case .success(let model):
-                print(model.setupTransaction)
-                print(model.swapTransaction)
-                print(model.cleanupTransaction)
-            case .failure(let error):
-                print("\(error.localizedDescription)")
-            }
-        }
-    }
-}
-
-// MARK: - POST Body
-
-extension SwapRequest {
-
-    struct PostBody {
-        /// Route provided in the `QuoteResponse.MarketInfoResponse`
-        var route: Route
-        /// The public key to be used for the swap
-        var userPublicKey: String
-        /// Auto wrap and unwrap SOL. Default is `true`
-        var wrapUnwrapSOL: Bool
-        /// Fee Account is optional. feeBps must have been passed in `QuoteRequest`.
-        /// This is the ATA account for the output token where the fee will be sent to. If you are swapping from SOL->USDC then this would be the USDC ATA you want to collect the fee.
-        var feeAccount: String?
-
-        init?(quote: QuoteResponse?, userPublicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
-            guard
-                let quote = quote?.data?[0]
-            else {
-                printError(Error.self, "Could not create POST body from QuoteResponse")
-                return nil
-            }
-
-            self.route = quote.route
-            self.userPublicKey = userPublicKey
-            self.wrapUnwrapSOL = wrapUnwrapSOL
-            self.feeAccount = feeAccount
-        }
-    }
-}
-
-// MARK: CodingKeys
-
-extension SwapRequest.PostBody: Encodable {
-    enum CodingKeys: String, CodingKey {
-        case route = "route"
-        case userPublicKey = "userPublicKey"
-        case wrapUnwrapSOL = "wrapUnwrapSOL"
-        case feeAccount = "fee_account_public_key"
     }
 }
