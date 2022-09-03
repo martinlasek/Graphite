@@ -124,11 +124,11 @@ struct GraphiteController {
         let outAmount = CryptoAmount.unit(outputMarketResponse.outAmount).getFullAmount(for: .sol)
 
         print("\n-----")
-        print("💵 OUT:\t\t \(outDollar)")
-        print("⬆️ INPUT:\t \(inAmount) SOL \t\t\t DEX: \(inputMarketResponse.label ?? "")")
-
-        print("💵 IN:\t\t \(inDollar)")
-        print("⬇️ OUTPUT:\t \(outAmount) SOL \t DEX: \(outputMarketResponse.label ?? "")")
+        print("⬆️ SEND:\t \(inAmount) \t\t SOL \t\t DEX: \(inputMarketResponse.label ?? "")")
+        print("💵 GET:\t\t \(outDollar) \t DOLLAR")
+        print()
+        print("💵 SEND:\t \(inDollar) \t DOLLAR")
+        print("⬇️ GET:\t\t \(outAmount)\t SOL \t\t DEX: \(outputMarketResponse.label ?? "")")
         print()
 
         if outAmount >= inAmount {
