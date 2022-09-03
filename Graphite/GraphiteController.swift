@@ -70,7 +70,11 @@ struct GraphiteController {
                 printSuccess(self, "Transaction sent SOL 2 USDT: \(txID_SOL_2_USDT)")
                 if let txID_USDT_2_SOL = await sendTransaction(swapResponse: swap_USDT_2_SOL_Response) {
                     printSuccess(self, "Transaction sent USDT 2 SOL: \(txID_USDT_2_SOL)")
+                } else {
+                    printError(self, "FAILED USDT 2 SOL.")
                 }
+            } else {
+                printError(self, "FAILED SOL 2 USDT.")
             }
         }
     }
@@ -88,7 +92,7 @@ struct GraphiteController {
 
         print("\n‼️ \(comment)")
         print("🔨 SetupTransaction: \(setupTx[..<setupIdx])..")
-        print("🔄 SwapTransaction:\t \(swapTx)")
+        print("🔄 SwapTransaction:\t \(swapTx[..<swapIdx])")
         print("🧹 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
         print()
     }
@@ -178,15 +182,18 @@ struct GraphiteController {
             transactions.insert(cleanupTx, at: 2)
         }
 
+//printDebug(self, "ACC PK: \(account.publicKey.description)")
         guard
-            let pk = try? PublicKey(string: "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA"),
+            let pk = try? PublicKey(string: "BcGdPzCVPp7iYEdYxWdcqqqhTq2ua3qqk5oCP4ZQSqP4"),
             let data = Data(base64Encoded: swapTransaction)
         else {
             printError(self, "Oooopsie!")
             return nil
         }
 
-        let meta = Account.Meta(publicKey: pk, isSigner: true, isWritable: true)
+//printDebug(self, "PK: \(pk.description)")
+
+        let meta = Account.Meta(publicKey: pk, isSigner: false, isWritable: false)
         let ti = TransactionInstruction(keys: [meta], programId: pk, data: [data])
 
         var preparedTx: PreparedTransaction?
@@ -220,7 +227,16 @@ struct GraphiteController {
             return nil
         }
 
-        return try? await apiClient.sendTransaction(transaction: tx)
+        do {
+            return try await apiClient.sendTransaction(transaction: tx)
+        } catch let error {
+            if let sError = error as? SolanaError {
+                printError(self, "SolanaError: \(sError.readableDescription)")
+            } else {
+                printError(self, error.readableDescription)
+            }
+            return nil
+        }
 
 //        if let setupTransaction = swapResponse.setupTransaction {
 //            print("\n🔨 SetupTransaction..")
