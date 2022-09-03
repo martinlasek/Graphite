@@ -66,7 +66,12 @@ struct GraphiteController {
 
         if isProfitable {
             // perform transaction
-            await getSolanaBalance()
+            if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
+                printSuccess(self, "Transaction sent SOL 2 USDT: \(txID_SOL_2_USDT)")
+                if let txID_USDT_2_SOL = await sendTransaction(swapResponse: swap_USDT_2_SOL_Response) {
+                    printSuccess(self, "Transaction sent USDT 2 SOL: \(txID_USDT_2_SOL)")
+                }
+            }
         }
     }
 
@@ -83,7 +88,7 @@ struct GraphiteController {
 
         print("\n‼️ \(comment)")
         print("🔨 SetupTransaction: \(setupTx[..<setupIdx])..")
-        print("🔄 SwapTransaction:\t \(swapTx[..<swapIdx])..")
+        print("🔄 SwapTransaction:\t \(swapTx)")
         print("🧹 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
         print()
     }
@@ -109,15 +114,26 @@ struct GraphiteController {
         }
 
         let inAmount = CryptoAmount.unit(inputMarketResponse.inAmount).getFullAmount(for: .sol)
+        let outDollar = CryptoAmount.unit(inputMarketResponse.outAmount).getFullAmount(for: .usdt)
+
+        let inDollar = CryptoAmount.unit(outputMarketResponse.inAmount).getFullAmount(for: .usdt)
         let outAmount = CryptoAmount.unit(outputMarketResponse.outAmount).getFullAmount(for: .sol)
 
         print("\n-----")
-        print("⬆️ INPUT:\t \(inAmount) SOL \t\t\t DEX: \(inputMarketResponse.label ?? "")..")
+        print("💵 OUT:\t\t \(outDollar)")
+        print("⬆️ INPUT:\t \(inAmount) SOL \t\t\t DEX: \(inputMarketResponse.label ?? "")")
+
+        print("💵 IN:\t\t \(inDollar)")
         print("⬇️ OUTPUT:\t \(outAmount) SOL \t DEX: \(outputMarketResponse.label ?? "")")
+        print()
 
         if outAmount >= inAmount {
             let diff = outAmount - inAmount
             print("🤑 PROFIT:\t \(String(format: "%.9f", diff))")
+            let outDollar = CryptoAmount.unit(inputMarketResponse.outAmount).getFullAmount(for: .usdt)
+            let inDollar = CryptoAmount.unit(outputMarketResponse.inAmount).getFullAmount(for: .usdt)
+            print("💵 OUT:\t \(outDollar)")
+            print("💵 IN:\t \(inDollar)")
             print("-----\n")
             return true
         } else {
@@ -128,7 +144,7 @@ struct GraphiteController {
         }
     }
 
-    private static func sendTransaction(swapResponse: SwapResponse) async {
+    private static func sendTransaction(swapResponse: SwapResponse) async -> TransactionID? {
         printDebug(self, "Sending transaction..")
 
         guard
@@ -136,7 +152,7 @@ struct GraphiteController {
             let account = try? Account(secretKey: Data(secretKey))
         else {
             printError(self, "Could not create account.")
-            return
+            return nil
         }
 
         let endpoint = APIEndPoint(
@@ -147,34 +163,91 @@ struct GraphiteController {
         let apiClient = JSONRPCAPIClient(endpoint: endpoint)
         let blockChainClient = BlockchainClient(apiClient: apiClient)
 
-
-
-        if let setupTransaction = swapResponse.setupTransaction {
-            print("\n🔨 SetupTransaction..")
-            guard let transactionId = try? await apiClient.sendTransaction(transaction: setupTransaction) else {
-                return
-            }
-
-            print("--> TransactionID, \(transactionId)\n")
+        guard let swapTransaction = swapResponse.swapTransaction else {
+            printError(self, "SwapResponse had no swapTransaction.")
+            return nil
         }
 
-        if let swapTransaction = swapResponse.swapTransaction {
-            print("\n🔄 SwapTransaction..")
-            guard let transactionId = try? await apiClient.sendTransaction(transaction: swapTransaction) else {
-                return
-            }
+        var transactions = [swapTransaction]
 
-            print("--> TransactionID, \(transactionId)\n")
+        if let setupTx = swapResponse.setupTransaction {
+            transactions.insert(setupTx, at: 0)
         }
 
-        if let cleanupTransaction = swapResponse.cleanupTransaction {
-            print("\n🧹 CleanupTransaction..")
-            guard let transactionId = try? await apiClient.sendTransaction(transaction: cleanupTransaction) else {
-                return
-            }
-
-            print("--> TransactionID, \(transactionId)\n")
+        if let cleanupTx = swapResponse.cleanupTransaction {
+            transactions.insert(cleanupTx, at: 2)
         }
+
+        guard
+            let pk = try? PublicKey(string: "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA"),
+            let data = Data(base64Encoded: swapTransaction)
+        else {
+            printError(self, "Oooopsie!")
+            return nil
+        }
+
+        let meta = Account.Meta(publicKey: pk, isSigner: true, isWritable: true)
+        let ti = TransactionInstruction(keys: [meta], programId: pk, data: [data])
+
+        var preparedTx: PreparedTransaction?
+
+        do {
+            preparedTx = try await blockChainClient.prepareTransaction(instructions: [ti], signers: [account], feePayer: pk)
+        } catch let error {
+            if let sError = error as? SolanaError {
+                printError(self, "SolanaError: \(sError.readableDescription)")
+            } else {
+                printError(self, error.readableDescription)
+            }
+            return nil
+        }
+
+        guard var preparedTransaction = preparedTx else {
+            printError(self, "Preparing Transaction failed.")
+            return nil
+        }
+
+        guard let recentBlockhash = try? await apiClient.getRecentBlockhash() else {
+            printError(self, "Recent blockhash failed.")
+            return nil
+        }
+
+        preparedTransaction.transaction.recentBlockhash = recentBlockhash
+        preparedTransaction.signers = [account]
+        try? preparedTransaction.sign()
+        guard let tx = try? preparedTransaction.serialize() else {
+            printError(self, "Could not serialize.")
+            return nil
+        }
+
+        return try? await apiClient.sendTransaction(transaction: tx)
+
+//        if let setupTransaction = swapResponse.setupTransaction {
+//            print("\n🔨 SetupTransaction..")
+//            guard let transactionId = try? await apiClient.sendTransaction(transaction: setupTransaction) else {
+//                return
+//            }
+//
+//            print("--> TransactionID, \(transactionId)\n")
+//        }
+//
+//        if let swapTransaction = swapResponse.swapTransaction {
+//            print("\n🔄 SwapTransaction..")
+//            guard let transactionId = try? await apiClient.sendTransaction(transaction: swapTransaction) else {
+//                return
+//            }
+//
+//            print("--> TransactionID, \(transactionId)\n")
+//        }
+//
+//        if let cleanupTransaction = swapResponse.cleanupTransaction {
+//            print("\n🧹 CleanupTransaction..")
+//            guard let transactionId = try? await apiClient.sendTransaction(transaction: cleanupTransaction) else {
+//                return
+//            }
+//
+//            print("--> TransactionID, \(transactionId)\n")
+//        }
     }
 
     private static func getSolanaBalance() async {
