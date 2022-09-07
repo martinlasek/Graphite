@@ -170,15 +170,15 @@ struct GraphiteController {
             return nil
         }
 
-        var transactions = [swapTransaction]
-
-        if let setupTx = swapResponse.setupTransaction {
-            transactions.insert(setupTx, at: 0)
-        }
-
-        if let cleanupTx = swapResponse.cleanupTransaction {
-            transactions.insert(cleanupTx, at: 2)
-        }
+//        var transactions = [swapTransaction]
+//
+//        if let setupTx = swapResponse.setupTransaction {
+//            transactions.insert(setupTx, at: 0)
+//        }
+//
+//        if let cleanupTx = swapResponse.cleanupTransaction {
+//            transactions.insert(cleanupTx, at: 2)
+//        }
 
 //printDebug(self, "ACC PK: \(account.publicKey.description)")
         guard
