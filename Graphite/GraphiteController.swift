@@ -14,6 +14,8 @@ struct GraphiteController {
     /// The entry point of the application.
     static func main() async throws {
 
+        Logger.setLoggers([GraphiteLogger()])
+
         // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
 
         let quoteRequestUSDT = QuoteRequest(
@@ -71,11 +73,13 @@ struct GraphiteController {
                 if let txID_USDT_2_SOL = await sendTransaction(swapResponse: swap_USDT_2_SOL_Response) {
                     printSuccess(self, "Transaction sent USDT 2 SOL: \(txID_USDT_2_SOL)")
                 } else {
-                    printError(self, "FAILED USDT 2 SOL.")
+                    printError(self, "FAILED | USDT 2 SOL.")
                 }
             } else {
-                printError(self, "FAILED SOL 2 USDT.")
+                printError(self, "FAILED | SOL 2 USDT.")
             }
+        } else {
+            print("✋🏻 Not profitable swap.")
         }
     }
 
@@ -91,9 +95,9 @@ struct GraphiteController {
         let cleanupIdx = String.Index(utf16Offset: cleanupTx.count > maxChars ? maxChars : 0, in: cleanupTx)
 
         print("\n‼️ \(comment)")
-        print("🔨 SetupTransaction: \(setupTx[..<setupIdx])..")
-        print("🔄 SwapTransaction:\t \(swapTx[..<swapIdx])")
-        print("🧹 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
+        print("⚙️ SetupTransaction: \(setupTx[..<setupIdx])..")
+        print("🔄 SwapTransaction:\t \(swapTx[..<swapIdx])..")
+        print("🗑 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
         print()
     }
 
@@ -134,10 +138,6 @@ struct GraphiteController {
         if outAmount >= inAmount {
             let diff = outAmount - inAmount
             print("🤑 PROFIT:\t \(String(format: "%.9f", diff))")
-            let outDollar = CryptoAmount.unit(inputMarketResponse.outAmount).getFullAmount(for: .usdt)
-            let inDollar = CryptoAmount.unit(outputMarketResponse.inAmount).getFullAmount(for: .usdt)
-            print("💵 OUT:\t \(outDollar)")
-            print("💵 IN:\t \(inDollar)")
             print("-----\n")
             return true
         } else {
@@ -149,8 +149,6 @@ struct GraphiteController {
     }
 
     private static func sendTransaction(swapResponse: SwapResponse) async -> TransactionID? {
-        printDebug(self, "Sending transaction..")
-
         guard
             let secretKey = PrivateKeyManager.getPrivateKey(),
             let account = try? Account(secretKey: Data(secretKey))
@@ -185,15 +183,17 @@ struct GraphiteController {
 //printDebug(self, "ACC PK: \(account.publicKey.description)")
         guard
             let pk = try? PublicKey(string: "BcGdPzCVPp7iYEdYxWdcqqqhTq2ua3qqk5oCP4ZQSqP4"),
-            let data = Data(base64Encoded: swapTransaction)
+            let data = Data(base64Encoded: swapTransaction),
+            swapResponse.setupTransaction == nil,
+            swapResponse.cleanupTransaction == nil
         else {
-            printError(self, "Oooopsie!")
+            printError(self, "Setup/Cleanup Transaction was not nil.")
             return nil
         }
 
 //printDebug(self, "PK: \(pk.description)")
 
-        let meta = Account.Meta(publicKey: pk, isSigner: false, isWritable: false)
+        let meta = Account.Meta(publicKey: pk, isSigner: true, isWritable: false)
         let ti = TransactionInstruction(keys: [meta], programId: pk, data: [data])
 
         var preparedTx: PreparedTransaction?
@@ -202,7 +202,7 @@ struct GraphiteController {
             preparedTx = try await blockChainClient.prepareTransaction(instructions: [ti], signers: [account], feePayer: pk)
         } catch let error {
             if let sError = error as? SolanaError {
-                printError(self, "SolanaError: \(sError.readableDescription)")
+                printError(self, "PREPARATION - SolanaError: \(sError.readableDescription)")
             } else {
                 printError(self, error.readableDescription)
             }
@@ -228,12 +228,13 @@ struct GraphiteController {
         }
 
         do {
+            print("🚀 Sending transaction..")
             return try await apiClient.sendTransaction(transaction: tx)
         } catch let error {
             if let sError = error as? SolanaError {
-                printError(self, "SolanaError: \(sError.readableDescription)")
+                printError(self, "SEND TRANSACTION - SolanaError: \(sError.readableDescription)")
             } else {
-                printError(self, error.readableDescription)
+                printError(self, "SEND TRANSACTION - error.readableDescription")
             }
             return nil
         }

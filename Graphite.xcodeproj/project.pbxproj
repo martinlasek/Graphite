@@ -13,6 +13,7 @@
 		232A172F28B1FD7300D6B86A /* GraphiteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A172E28B1FD7300D6B86A /* GraphiteController.swift */; };
 		232A173628B1FDA200D6B86A /* Base58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173528B1FDA200D6B86A /* Base58.swift */; };
 		232A173C28B2C5FC00D6B86A /* PrivateKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173B28B2C5FC00D6B86A /* PrivateKeyManager.swift */; };
+		23B5489628C404460039A410 /* GraphiteLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B5489528C404460039A410 /* GraphiteLogger.swift */; };
 		23EA0CA428C012A40022DC1A /* JupiterApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EA0CA328C012A40022DC1A /* JupiterApi.swift */; };
 		23EA0CA728C13B0D0022DC1A /* CryptoCurrency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EA0CA628C13B0D0022DC1A /* CryptoCurrency.swift */; };
 		23EA0CA928C15C540022DC1A /* CryptoAmount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EA0CA828C15C540022DC1A /* CryptoAmount.swift */; };
@@ -46,6 +47,7 @@
 		232A173B28B2C5FC00D6B86A /* PrivateKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateKeyManager.swift; sourceTree = "<group>"; };
 		232A174028B2DB9000D6B86A /* private-key-setup.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "private-key-setup.gif"; sourceTree = "<group>"; };
 		232A174128B2DBC500D6B86A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		23B5489528C404460039A410 /* GraphiteLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphiteLogger.swift; sourceTree = "<group>"; };
 		23EA0CA328C012A40022DC1A /* JupiterApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterApi.swift; sourceTree = "<group>"; };
 		23EA0CA628C13B0D0022DC1A /* CryptoCurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoCurrency.swift; sourceTree = "<group>"; };
 		23EA0CA828C15C540022DC1A /* CryptoAmount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CryptoAmount.swift; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				23EA0CA628C13B0D0022DC1A /* CryptoCurrency.swift */,
 				23EA0CA828C15C540022DC1A /* CryptoAmount.swift */,
 				23EA0CAA28C1BC150022DC1A /* InMemoryAccountStorage.swift */,
+				23B5489528C404460039A410 /* GraphiteLogger.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -227,6 +230,7 @@
 				06E488C028BC430E00294009 /* SwapResponse.swift in Sources */,
 				23F1A8FE28B525B8005CA130 /* QuoteResponse.swift in Sources */,
 				23EA0CAB28C1BC150022DC1A /* InMemoryAccountStorage.swift in Sources */,
+				23B5489628C404460039A410 /* GraphiteLogger.swift in Sources */,
 				23EA0CA728C13B0D0022DC1A /* CryptoCurrency.swift in Sources */,
 				232A173C28B2C5FC00D6B86A /* PrivateKeyManager.swift in Sources */,
 				232A172F28B1FD7300D6B86A /* GraphiteController.swift in Sources */,
