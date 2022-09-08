@@ -29,7 +29,7 @@ struct GraphiteController {
         let quoteRequestUSDT = QuoteRequest(
             inputMint: .sol,
             outputMint: .usdt,
-            inputAmount: .full(0.1),
+            inputAmount: .full(0.2),
             slippage: .percent(0)
         )
 
@@ -60,8 +60,6 @@ struct GraphiteController {
             return
         }
 
-        let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
-
         // MARK: - Swap
 
         guard
@@ -73,6 +71,8 @@ struct GraphiteController {
 
         logSwapTransaction(swapResonse: swap_SOL_2_USDT_Response, comment: "SOL to USDT")
         logSwapTransaction(swapResonse: swap_USDT_2_SOL_Response, comment: "USDT to SOL")
+
+        let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
 
         if isProfitable {
             guard
@@ -154,11 +154,16 @@ struct GraphiteController {
         print("⬅️ GET:\t\t \(outAmount)\t SOL \t\t DEX: \(outputMarketResponse.label ?? "")")
         print()
 
-        if outAmount >= inAmount {
+        if outAmount >= inAmount && outAmount < inAmount * 2 {
             let diff = outAmount - inAmount
             print("🤑 PROFIT:\t \(String(format: "%.9f", diff))")
             print("-----\n")
             return true
+        } else if outAmount >= inAmount {
+            let diff = inAmount - outAmount
+            print("⚠️ TOO MUCH PROFIT - UNREALISTIC:\t \(String(format: "%.9f", diff))")
+            print("-----\n")
+            return false
         } else {
             let diff = inAmount - outAmount
             print("🥵 LOSS:\t \(String(format: "%.9f", diff))")
