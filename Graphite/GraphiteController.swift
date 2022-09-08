@@ -51,11 +51,7 @@ struct GraphiteController {
         do {
             preparedTx = try await blockChainClient.prepareTransaction(instructions: [ti], signers: [account], feePayer: publicKeyFROM)
         } catch let error {
-            if let sError = error as? SolanaError {
-                printError(self, "PREPARATION - SolanaError: \(sError.readableDescription)")
-            } else {
-                printError(self, "PREPARATION - ERROR: \(error.readableDescription)")
-            }
+            handleSolanaError(id: "PREPARATION", error)
             return nil
         }
 
@@ -81,11 +77,7 @@ struct GraphiteController {
             print("🚀 Sending transaction..")
             return try await apiClient.sendTransaction(transaction: tx)
         } catch let error {
-            if let sError = error as? SolanaError {
-                printError(self, "SEND TRANSACTION - SolanaError: \(sError.readableDescription)")
-            } else {
-                printError(self, "SEND TRANSACTION - Error: \(error.readableDescription)")
-            }
+            handleSolanaError(id: "SEND TRANSACTION", error)
             return nil
         }
     }
@@ -294,11 +286,7 @@ struct GraphiteController {
         do {
             try preparedTxNEW.sign()
         } catch let error {
-            if let sError = error as? SolanaError {
-                printError(self, "SEND TRANSACTION - SolanaError: \(sError.readableDescription)")
-            } else {
-                printError(self, "SEND TRANSACTION - \(error.readableDescription)")
-            }
+            handleSolanaError(id: "SEND TRANSACTION", error)
             return nil
         }
 
