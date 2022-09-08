@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Solana
+import SolanaSwift
 
 struct SwapRequest: Codable, RequestGenerator {
     private var swapUrlString = "https://quote-api.jup.ag/v1/swap"
@@ -21,7 +21,7 @@ struct SwapRequest: Codable, RequestGenerator {
     /// This is the ATA account for the output token where the fee will be sent to. If you are swapping from SOL->USDC then this would be the USDC ATA you want to collect the fee.
     let feeAccount: String?
 
-    init(dataResponse: QuoteResponse.DataResponse, userPublicKey: String, wrapUnwrapSOL: Bool = false, feeAccount: String? = nil) {
+    init(dataResponse: QuoteResponse.DataResponse, userPublicKey: String, wrapUnwrapSOL: Bool = true, feeAccount: String? = nil) {
         self.route = RouteRequest(
             inAmount: dataResponse.inAmount,
             outAmount: dataResponse.outAmount,

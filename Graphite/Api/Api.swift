@@ -50,7 +50,6 @@ struct Api {
     static func sendAsync<T: Decodable>(request: URLRequest) async -> Result<T, ApiError> {
         print("🌐 API Request to: \(request.url?.absoluteString ?? "nil")")
 
-
         guard let (data, response) = try? await URLSession.shared.data(for: request) else {
             return .failure(.couldNotDecodeResponse)
         }

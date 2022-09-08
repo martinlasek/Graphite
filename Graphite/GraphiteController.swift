@@ -11,87 +11,17 @@ import SolanaSwift
 @main
 struct GraphiteController {
 
-    private static func createTransaction() async -> TransactionID? {
-
-        let publicKeyFROMString = "BcGdPzCVPp7iYEdYxWdcqqqhTq2ua3qqk5oCP4ZQSqP4"
-        let publicKeyTOString = "7D4ofyh8H1MkvNLvvLDaSMGJqHtDkFZLdh2A5ishdqmN"
-
-        guard
-            let publicKeyFROM = try? PublicKey(string: publicKeyFROMString),
-            let publicKeyTWO = try? PublicKey(string: publicKeyTOString)
-        else {
-            printError(self, "PUBLIC KEY: could not be created with: \(publicKeyFROMString)")
-            return nil
-        }
-
-
-        let sol = CryptoAmount.full(1)
-        let lamports = UInt64(sol.getUnitAmount(for: .sol))
-
-        let ti = SystemProgram.transferInstruction(from: publicKeyFROM, to: publicKeyTWO, lamports: lamports)
-
-        guard
-            let secretKey = PrivateKeyManager.getPrivateKey(),
-            let account = try? Account(secretKey: Data(secretKey))
-        else {
-            printError(self, "Could not create account.")
-            return nil
-        }
-
-        let endpoint = APIEndPoint(
-            address: "https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
-            network: .mainnetBeta
-        )
-
-        let apiClient = JSONRPCAPIClient(endpoint: endpoint)
-        let blockChainClient = BlockchainClient(apiClient: apiClient)
-
-        var preparedTx: PreparedTransaction?
-
-        do {
-            preparedTx = try await blockChainClient.prepareTransaction(instructions: [ti], signers: [account], feePayer: publicKeyFROM)
-        } catch let error {
-            handleSolanaError(id: "PREPARATION", error)
-            return nil
-        }
-
-        guard var preparedTransaction = preparedTx else {
-            printError(self, "Preparing Transaction failed.")
-            return nil
-        }
-
-        guard let recentBlockhash = try? await apiClient.getRecentBlockhash() else {
-            printError(self, "Recent blockhash failed.")
-            return nil
-        }
-
-        preparedTransaction.transaction.recentBlockhash = recentBlockhash
-        preparedTransaction.signers = [account]
-        try? preparedTransaction.sign()
-        guard let tx = try? preparedTransaction.serialize() else {
-            printError(self, "Could not serialize.")
-            return nil
-        }
-
-        do {
-            print("🚀 Sending transaction..")
-            return try await apiClient.sendTransaction(transaction: tx)
-        } catch let error {
-            handleSolanaError(id: "SEND TRANSACTION", error)
-            return nil
-        }
-    }
-
     /// The entry point of the application.
     static func main() async throws {
 
         Logger.setLoggers([GraphiteLogger()])
 
-//        guard let txID = await createTransaction() else {
+//        guard let txID = await sendSolFromOneWalletToAnother() else {
 //            printError(self, "Did not send a transaction.")
 //            return
 //        }
 //
+//        printSuccess(self, "TaxID: \(txID)")
 //        return
 
         // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
@@ -145,6 +75,16 @@ struct GraphiteController {
         logSwapTransaction(swapResonse: swap_USDT_2_SOL_Response, comment: "USDT to SOL")
 
         if isProfitable {
+            guard
+                swap_SOL_2_USDT_Response.setupTransaction == nil,
+                swap_SOL_2_USDT_Response.cleanupTransaction == nil,
+                swap_USDT_2_SOL_Response.setupTransaction == nil,
+                swap_USDT_2_SOL_Response.cleanupTransaction == nil
+            else {
+                print("✋🏻 Setup/Cleanup Transaction was not nil.")
+                return
+            }
+
             // perform transaction
             if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
                 printSuccess(self, "Transaction sent SOL 2 USDT: \(txID_SOL_2_USDT)")
@@ -180,7 +120,8 @@ struct GraphiteController {
     }
 
     private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
-        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: "BcGdPzCVPp7iYEdYxWdcqqqhTq2ua3qqk5oCP4ZQSqP4")
+        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: WalletKeyManager.getPublicKey())
+
         let fetchSwapResponse = await JupiterApi.fetchSwap(for: swapRequest)
         guard case .success(let swapResponse) = fetchSwapResponse else {
             printError(self, "Could not get swap response from \(fetchSwapResponse)")
@@ -228,7 +169,7 @@ struct GraphiteController {
 
     private static func sendTransaction(swapResponse: SwapResponse) async -> TransactionID? {
         guard
-            let secretKey = PrivateKeyManager.getPrivateKey(),
+            let secretKey = WalletKeyManager.getPrivateKey(),
             let account = try? Account(secretKey: Data(secretKey))
         else {
             printError(self, "Could not create account.")
@@ -254,14 +195,6 @@ struct GraphiteController {
 //        if let cleanupTx = swapResponse.cleanupTransaction {
 //            transactions.insert(cleanupTx, at: 2)
 //        }
-
-        guard
-            swapResponse.setupTransaction == nil,
-            swapResponse.cleanupTransaction == nil
-        else {
-            printError(self, "Setup/Cleanup Transaction was not nil.")
-            return nil
-        }
 
         guard
             let data = Data(base64Encoded: swapTransaction),
@@ -292,7 +225,78 @@ struct GraphiteController {
 
         do {
             print("🚀 Sending transaction..")
-            return try await apiClient.sendTransaction(transaction: preparedTxNEW.serialize(), configs: RequestConfiguration(encoding: "base64", skipPreflight: true)!)
+            let requestConf = RequestConfiguration(encoding: "base64", skipPreflight: true)!
+            return try await apiClient.sendTransaction(transaction: preparedTxNEW.serialize(), configs: requestConf)
+        } catch let error {
+            handleSolanaError(id: "SEND TRANSACTION", error)
+            return nil
+        }
+    }
+
+    private static func sendSolFromOneWalletToAnother() async -> TransactionID? {
+
+        let publicKeyFROMString: String = WalletKeyManager.getPublicKey()
+        let publicKeyTOString = "7xA6BAdBrq63MVYVutWTfuHLvKws78n4xLYmSjmrSQ2M"
+
+        guard
+            let publicKeyFROM = try? PublicKey(string: publicKeyFROMString),
+            let publicKeyTWO = try? PublicKey(string: publicKeyTOString)
+        else {
+            printError(self, "PUBLIC KEY: could not be created with: \(publicKeyFROMString)")
+            return nil
+        }
+
+        let sol = CryptoAmount.full(0.999995)
+        let lamports = UInt64(sol.getUnitAmount(for: .sol))
+
+        let ti = SystemProgram.transferInstruction(from: publicKeyFROM, to: publicKeyTWO, lamports: lamports)
+
+        guard
+            let secretKey = WalletKeyManager.getPrivateKey(),
+            let account = try? Account(secretKey: Data(secretKey))
+        else {
+            printError(self, "Could not create account.")
+            return nil
+        }
+
+        let endpoint = APIEndPoint(
+            address: "https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
+            network: .mainnetBeta
+        )
+
+        let apiClient = JSONRPCAPIClient(endpoint: endpoint)
+        let blockChainClient = BlockchainClient(apiClient: apiClient)
+
+        var preparedTx: PreparedTransaction?
+
+        do {
+            preparedTx = try await blockChainClient.prepareTransaction(instructions: [ti], signers: [account], feePayer: publicKeyFROM)
+        } catch let error {
+            handleSolanaError(id: "PREPARATION", error)
+            return nil
+        }
+
+        guard var preparedTransaction = preparedTx else {
+            printError(self, "Preparing Transaction failed.")
+            return nil
+        }
+
+        guard let recentBlockhash = try? await apiClient.getRecentBlockhash() else {
+            printError(self, "Recent blockhash failed.")
+            return nil
+        }
+
+        preparedTransaction.transaction.recentBlockhash = recentBlockhash
+        preparedTransaction.signers = [account]
+        try? preparedTransaction.sign()
+        guard let tx = try? preparedTransaction.serialize() else {
+            printError(self, "Could not serialize.")
+            return nil
+        }
+
+        do {
+            print("🚀 Sending transaction..")
+            return try await apiClient.sendTransaction(transaction: tx)
         } catch let error {
             handleSolanaError(id: "SEND TRANSACTION", error)
             return nil
@@ -301,7 +305,7 @@ struct GraphiteController {
 
     private static func getSolanaBalance() async {
         guard
-            let secretKey = PrivateKeyManager.getPrivateKey(),
+            let secretKey = WalletKeyManager.getPrivateKey(),
             let account = try? Account(secretKey: Data(secretKey))
         else {
             printError(self, "Could not create account.")
