@@ -236,7 +236,7 @@ struct GraphiteController {
         }
 
         let endpoint = APIEndPoint(
-            address: "https://ssc-dao.genesysgo.net", //"https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
+            address: "https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
             network: .mainnetBeta
         )
 
@@ -309,7 +309,7 @@ struct GraphiteController {
         }
 
         let endpoint = APIEndPoint(
-            address: "https://ssc-dao.genesysgo.net", // "https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
+            address: "https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
             network: .mainnetBeta
         )
 
