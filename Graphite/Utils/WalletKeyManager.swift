@@ -31,7 +31,7 @@ struct WalletKeyManager {
 
     /// Returns the public key as a String.
     static func getPublicKey() -> String {
-        return "7xA6BAdBrq63MVYVutWTfuHLvKws78n4xLYmSjmrSQ2M"
+        return "E4NyQ8tdBWigdZ42uwzknDCL2uf8NfF8u6WKZY7k16qA"
     }
 
     /// Returns the public key as an object of `PublicKey`.

@@ -16,14 +16,6 @@ struct GraphiteController {
 
         Logger.setLoggers([GraphiteLogger()])
 
-//        guard let txID = await sendSolFromOneWalletToAnother() else {
-//            printError(self, "Did not send a transaction.")
-//            return
-//        }
-//
-//        printSuccess(self, "TaxID: \(txID)")
-//        return
-
         // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
 
         let quoteRequestUSDT = QuoteRequest(
@@ -75,15 +67,15 @@ struct GraphiteController {
         let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
 
         if isProfitable {
-            guard
-                swap_SOL_2_USDT_Response.setupTransaction == nil,
-                swap_SOL_2_USDT_Response.cleanupTransaction == nil,
-                swap_USDT_2_SOL_Response.setupTransaction == nil,
-                swap_USDT_2_SOL_Response.cleanupTransaction == nil
-            else {
-                print("✋🏻 Setup/Cleanup Transaction was not nil.")
-                return
-            }
+//            guard
+//                swap_SOL_2_USDT_Response.setupTransaction == nil,
+//                swap_SOL_2_USDT_Response.cleanupTransaction == nil,
+//                swap_USDT_2_SOL_Response.setupTransaction == nil,
+//                swap_USDT_2_SOL_Response.cleanupTransaction == nil
+//            else {
+//                print("✋🏻 Setup/Cleanup Transaction was not nil.")
+//                return
+//            }
 
             // perform transaction
             if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
@@ -172,7 +164,25 @@ struct GraphiteController {
         }
     }
 
-    private static func sendTransaction(swapResponse: SwapResponse) async -> TransactionID? {
+    private static func sendTransaction(swapResponse: SwapResponse) async -> [TransactionID?]? {
+        var txIDs = [TransactionID?]()
+
+        if let setupTx = swapResponse.setupTransaction {
+            txIDs.append(await execute(transaction: setupTx))
+        }
+
+        if let swapTx = swapResponse.swapTransaction {
+            txIDs.append(await execute(transaction: swapTx))
+        }
+
+        if let cleanupTx = swapResponse.cleanupTransaction {
+            txIDs.append(await execute(transaction: cleanupTx))
+        }
+
+        return txIDs
+    }
+
+    private static func execute(transaction: String) async -> TransactionID? {
         guard
             let secretKey = WalletKeyManager.getPrivateKey(),
             let account = try? Account(secretKey: Data(secretKey))
@@ -181,38 +191,22 @@ struct GraphiteController {
             return nil
         }
 
-        let endpoint = APIEndPoint(
-            address: "https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
-            network: .mainnetBeta
-        )
-
-        guard let swapTransaction = swapResponse.swapTransaction else {
-            printError(self, "SwapResponse had no swapTransaction.")
-            return nil
-        }
-
-//        var transactions = [swapTransaction]
-//
-//        if let setupTx = swapResponse.setupTransaction {
-//            transactions.insert(setupTx, at: 0)
-//        }
-//
-//        if let cleanupTx = swapResponse.cleanupTransaction {
-//            transactions.insert(cleanupTx, at: 2)
-//        }
-
         guard
-            let data = Data(base64Encoded: swapTransaction),
+            let data = Data(base64Encoded: transaction),
             let transaction = try? Transaction.from(data: data)
         else {
             printError(self, "Transaction Test failed")
             return nil
         }
 
+        let endpoint = APIEndPoint(
+            address: "https://solana-mainnet.g.alchemy.com/v2/4TYxikV0LFWnb4hqs4J1oi0Hv6Rrjuru",
+            network: .mainnetBeta
+        )
+
         var preparedTxNEW = PreparedTransaction(transaction: transaction, signers: [account], expectedFee: .zero)
 
         let apiClient = JSONRPCAPIClient(endpoint: endpoint)
-        // let blockChainClient = BlockchainClient(apiClient: apiClient)
 
         guard let recentBlockHash = try? await apiClient.getRecentBlockhash() else {
             printError(self, "RECENT BLOCK HASH")
@@ -225,7 +219,6 @@ struct GraphiteController {
             try preparedTxNEW.sign()
         } catch let error {
             handleSolanaError(id: "SEND TRANSACTION", error)
-            return nil
         }
 
         do {
