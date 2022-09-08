@@ -279,20 +279,34 @@ struct GraphiteController {
             return nil
         }
 
-        let preparedTxNEW = PreparedTransaction(transaction: transaction, signers: [account], expectedFee: .zero)
+        var preparedTxNEW = PreparedTransaction(transaction: transaction, signers: [account], expectedFee: .zero)
 
         let apiClient = JSONRPCAPIClient(endpoint: endpoint)
-        let blockChainClient = BlockchainClient(apiClient: apiClient)
+        // let blockChainClient = BlockchainClient(apiClient: apiClient)
+
+        guard let recentBlockHash = try? await apiClient.getRecentBlockhash() else {
+            printError(self, "RECENT BLOCK HASH")
+            return nil
+        }
+
+        preparedTxNEW.transaction.recentBlockhash = recentBlockHash
 
         do {
-            print("🚀 Sending transaction..")
-            return try await blockChainClient.sendTransaction(preparedTransaction: preparedTxNEW)
+            try preparedTxNEW.sign()
         } catch let error {
             if let sError = error as? SolanaError {
                 printError(self, "SEND TRANSACTION - SolanaError: \(sError.readableDescription)")
             } else {
                 printError(self, "SEND TRANSACTION - \(error.readableDescription)")
             }
+            return nil
+        }
+
+        do {
+            print("🚀 Sending transaction..")
+            return try await apiClient.sendTransaction(transaction: preparedTxNEW.serialize(), configs: RequestConfiguration(encoding: "base64", skipPreflight: true)!)
+        } catch let error {
+            handleSolanaError(id: "SEND TRANSACTION", error)
             return nil
         }
     }
@@ -323,5 +337,13 @@ struct GraphiteController {
         }
 
         print("💰 Solana Balance: \(CryptoAmount.unit(Int(balance)).getFullAmount(for: .sol))")
+    }
+
+    private static func handleSolanaError(id: String, _ error : Error) {
+        if let sError = error as? SolanaError {
+            printError(self, "\(id) - SolanaError: \(sError.readableDescription)")
+        } else {
+            printError(self, "\(id) - \(error.readableDescription)")
+        }
     }
 }

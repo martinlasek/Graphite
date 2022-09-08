@@ -12,10 +12,10 @@
     {
       "identity" : "solana-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/p2p-org/solana-swift.git",
+      "location" : "https://github.com/martinlasek/solana-swift.git",
       "state" : {
-        "revision" : "aeb3ec10d84bd8bd5441deb6abac5f829ccd9261",
-        "version" : "2.4.0"
+        "revision" : "67b8d731f1138f93b531cc3b03eb8146825c44fe",
+        "version" : "2.4.2"
       }
     },
     {
