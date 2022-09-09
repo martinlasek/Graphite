@@ -14,6 +14,7 @@ struct QuoteRequest: RequestGenerator {
     let outputMint: CryptoCurrency
     let inputAmount: CryptoAmount
     let slippage: Slippage
+    let publicKey: String
 
     func createRequest() -> URLRequest? {
         guard var urlComponents = URLComponents(string: quoteUrlString) else {
@@ -28,7 +29,8 @@ struct QuoteRequest: RequestGenerator {
             URLQueryItem(name: "inputMint", value: inputMint.address),
             URLQueryItem(name: "outputMint", value: outputMint.address),
             URLQueryItem(name: "amount", value: amountString),
-            URLQueryItem(name: "slippage", value: slippageString)
+            URLQueryItem(name: "slippage", value: slippageString),
+            URLQueryItem(name: "userPublicKey", value: publicKey)
         ]
 
         urlComponents.queryItems = queryItems

@@ -26,6 +26,7 @@ struct QuoteResponse: Codable {
         let outAmountWithSlippage: Int?
         let swapMode: String?
         let marketInfos: [MarketInfoResponse]
+        let fees: Fees
     }
 
     struct MarketInfoResponse: Codable {
@@ -51,5 +52,13 @@ struct QuoteResponse: Codable {
         let amount: Int?
         let mint: String?
         let pct: Int?
+    }
+
+    struct Fees: Codable {
+        let signatureFee: Int?
+        let openOrdersDeposits: [Int]?
+        let ataDeposits: [Int]?
+        let totalFeeAndDeposits: Int?
+        let minimumSOLForTransaction: Int?
     }
 }
