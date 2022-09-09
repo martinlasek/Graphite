@@ -75,16 +75,6 @@ struct GraphiteController {
         let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
 
         if isProfitable {
-            guard
-                swap_SOL_2_USDT_Response.setupTransaction == nil,
-                swap_SOL_2_USDT_Response.cleanupTransaction == nil,
-                swap_USDT_2_SOL_Response.setupTransaction == nil,
-                swap_USDT_2_SOL_Response.cleanupTransaction == nil
-            else {
-                print("✋🏻 Setup/Cleanup Transaction was not nil.")
-                return
-            }
-
             // perform transaction
             if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
                 printSuccess(self, "Transaction sent SOL 2 USDT: \(txID_SOL_2_USDT)")
@@ -172,7 +162,7 @@ struct GraphiteController {
         }
     }
 
-    private static func sendTransaction(swapResponse: SwapResponse) async -> TransactionID? {
+    private static func sendTransaction(swapResponse: SwapResponse) async -> [TransactionID]? {
         guard
             let secretKey = WalletKeyManager.getPrivateKey(),
             let account = try? Account(secretKey: Data(secretKey))
@@ -186,52 +176,58 @@ struct GraphiteController {
             network: .mainnetBeta
         )
 
-        guard let swapTransaction = swapResponse.swapTransaction else {
+        let apiClient = JSONRPCAPIClient(endpoint: endpoint)
+        // let blockChainClient = BlockchainClient(apiClient: apiClient)
+
+        guard
+            let swapTransaction = swapResponse.swapTransaction,
+            let swapTx = try? await TransactionManager.createPreparedTransaction(with: swapTransaction, account: account, and: apiClient),
+            let swapTxString = try? swapTx.serialize()
+        else {
             printError(self, "SwapResponse had no swapTransaction.")
             return nil
         }
 
-//        var transactions = [swapTransaction]
-//
-//        if let setupTx = swapResponse.setupTransaction {
-//            transactions.insert(setupTx, at: 0)
-//        }
-//
-//        if let cleanupTx = swapResponse.cleanupTransaction {
-//            transactions.insert(cleanupTx, at: 2)
-//        }
+        // MARK: -  Preparing Transaction array with potential setup/cleanup transaction
 
-        guard
-            let data = Data(base64Encoded: swapTransaction),
-            let transaction = try? Transaction.from(data: data)
-        else {
-            printError(self, "Transaction Test failed")
-            return nil
+        var transactionList = [swapTxString]
+
+        // Prepare SETUP Transaction
+        if let setupTransaction = swapResponse.setupTransaction {
+            guard
+                let setupTx = try? await TransactionManager.createPreparedTransaction(with: setupTransaction, account: account, and: apiClient),
+                let setupTxString = try? setupTx.serialize()
+            else {
+                printError(self, "setupTransaction was given but UNABLE to create PreparedTransaction out of it.")
+                return nil
+            }
+
+            transactionList.insert(setupTxString, at: 0)
         }
 
-        var preparedTxNEW = PreparedTransaction(transaction: transaction, signers: [account], expectedFee: .zero)
+        // Prepare CLEANUP Transaction
+        if let cleanupTransaction = swapResponse.cleanupTransaction {
+            guard
+                let cleanupTx = try? await TransactionManager.createPreparedTransaction(with: cleanupTransaction, account: account, and: apiClient),
+                let cleanupTxString = try? cleanupTx.serialize()
+            else {
+                printError(self, "cleanupTransaction was given but UNABLE to create PreparedTransaction out of it.")
+                return nil
+            }
 
-        let apiClient = JSONRPCAPIClient(endpoint: endpoint)
-        // let blockChainClient = BlockchainClient(apiClient: apiClient)
-
-        guard let recentBlockHash = try? await apiClient.getRecentBlockhash() else {
-            printError(self, "RECENT BLOCK HASH")
-            return nil
+            transactionList.insert(cleanupTxString, at: 2)
         }
 
-        preparedTxNEW.transaction.recentBlockhash = recentBlockHash
+        let requestConf = RequestConfiguration(encoding: "base64", skipPreflight: true)!
 
-        do {
-            try preparedTxNEW.sign()
-        } catch let error {
-            handleSolanaError(id: "SEND TRANSACTION", error)
-            return nil
+        let batchRequestList = transactionList.map {
+            return JSONRPCAPIClient.RequestEncoder.RequestType(method: "sendTransaction", params: [$0, requestConf])
         }
 
         do {
             print("🚀 Sending transaction..")
-            let requestConf = RequestConfiguration(encoding: "base64", skipPreflight: true)!
-            return try await apiClient.sendTransaction(transaction: preparedTxNEW.serialize(), configs: requestConf)
+            let resultList = try await apiClient.batchRequest(with: batchRequestList)
+            return resultList.map { $0.result?.description ?? "------" }
         } catch let error {
             handleSolanaError(id: "SEND TRANSACTION", error)
             return nil
