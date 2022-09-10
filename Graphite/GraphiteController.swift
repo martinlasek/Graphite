@@ -13,17 +13,16 @@ struct GraphiteController {
 
     /// The entry point of the application.
     static func main() async throws {
-
         Logger.setLoggers([GraphiteLogger()])
+        let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable()
+        print("Result: \(hasExecutedATrade)")
+    }
+}
 
-//        guard let txID = await sendSolFromOneWalletToAnother() else {
-//            printError(self, "Did not send a transaction.")
-//            return
-//        }
-//
-//        printSuccess(self, "TaxID: \(txID)")
-//        return
+// MARK: - Try finding and then executing profitable trade
 
+extension GraphiteController {
+    private static func checkPossibleTradeAndExecuteIfProfitable() async -> Bool {
         // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
 
         let quoteRequestUSDT = QuoteRequest(
@@ -39,7 +38,7 @@ struct GraphiteController {
             case .success(let quoteSOL2USDTResponse) = fetchSOLQuoteResponse,
             let data_SOL_2_USDT_Response = quoteSOL2USDTResponse.data.first
         else {
-            return
+            return false
         }
 
         // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
@@ -57,7 +56,7 @@ struct GraphiteController {
             case .success(let quoteUSDT2SOLResponse) = fetchUSDTQuoteResponse,
             let data_USDT_2_SOL_Response = quoteUSDT2SOLResponse.data.first
         else {
-            return
+            return false
         }
 
         // MARK: - Early return if not profitable
@@ -65,7 +64,7 @@ struct GraphiteController {
         let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
         guard isProfitable else {
             print("✋🏻 Not profitable swap.")
-            return
+            return false
         }
 
         // MARK: - Get Swap Transactions
@@ -74,7 +73,7 @@ struct GraphiteController {
             let swap_SOL_2_USDT_Response = await getSwapTransaction(for: data_SOL_2_USDT_Response),
             let swap_USDT_2_SOL_Response = await getSwapTransaction(for: data_USDT_2_SOL_Response)
         else {
-            return
+            return false
         }
 
         logSwapTransaction(swapResonse: swap_SOL_2_USDT_Response, comment: "SOL to USDT")
@@ -91,6 +90,24 @@ struct GraphiteController {
         } else {
             printError(self, "FAILED | SOL 2 USDT.")
         }
+
+        return true
+    }
+}
+
+// MARK: - Swap Transaction
+
+extension GraphiteController {
+    private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
+        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: WalletKeyManager.getPublicKey())
+
+        let fetchSwapResponse = await JupiterApi.fetchSwap(for: swapRequest)
+        guard case .success(let swapResponse) = fetchSwapResponse else {
+            printError(self, "Could not get swap response from \(fetchSwapResponse)")
+            return nil
+        }
+
+        return swapResponse
     }
 
     private static func logSwapTransaction(swapResonse: SwapResponse, comment: String) {
@@ -110,19 +127,11 @@ struct GraphiteController {
         print("🗑 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
         print()
     }
+}
 
-    private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
-        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: WalletKeyManager.getPublicKey())
+// MARK: - Profit/Loss calculator and logger.
 
-        let fetchSwapResponse = await JupiterApi.fetchSwap(for: swapRequest)
-        guard case .success(let swapResponse) = fetchSwapResponse else {
-            printError(self, "Could not get swap response from \(fetchSwapResponse)")
-            return nil
-        }
-
-        return swapResponse
-    }
-
+extension GraphiteController {
     /// Logs the input amount and output amount for a swap and also prints profitability.
     private static func isProfitOrLoss(using inputQuote: QuoteResponse, and outputQuote: QuoteResponse) -> Bool {
         guard
