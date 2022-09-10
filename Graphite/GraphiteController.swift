@@ -60,7 +60,15 @@ struct GraphiteController {
             return
         }
 
-        // MARK: - Swap
+        // MARK: - Early return if not profitable
+
+        let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
+        guard isProfitable else {
+            print("✋🏻 Not profitable swap.")
+            return
+        }
+
+        // MARK: - Get Swap Transactions
 
         guard
             let swap_SOL_2_USDT_Response = await getSwapTransaction(for: data_SOL_2_USDT_Response),
@@ -72,22 +80,16 @@ struct GraphiteController {
         logSwapTransaction(swapResonse: swap_SOL_2_USDT_Response, comment: "SOL to USDT")
         logSwapTransaction(swapResonse: swap_USDT_2_SOL_Response, comment: "USDT to SOL")
 
-        let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
-
-        if isProfitable {
-            // perform transaction
-            if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
-                printSuccess(self, "Transaction sent SOL 2 USDT: \(txID_SOL_2_USDT)")
-                if let txID_USDT_2_SOL = await sendTransaction(swapResponse: swap_USDT_2_SOL_Response) {
-                    printSuccess(self, "Transaction sent USDT 2 SOL: \(txID_USDT_2_SOL)")
-                } else {
-                    printError(self, "FAILED | USDT 2 SOL.")
-                }
+        // perform transaction
+        if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
+            printSuccess(self, "SUCCESS | SOL 2 USDT | txID: \(txID_SOL_2_USDT)")
+            if let txID_USDT_2_SOL = await sendTransaction(swapResponse: swap_USDT_2_SOL_Response) {
+                printSuccess(self, "SUCCESS | USDT 2 SOL | txID: \(txID_USDT_2_SOL)")
             } else {
-                printError(self, "FAILED | SOL 2 USDT.")
+                printError(self, "FAILED | USDT 2 SOL.")
             }
         } else {
-            print("✋🏻 Not profitable swap.")
+            printError(self, "FAILED | SOL 2 USDT.")
         }
     }
 
@@ -161,7 +163,11 @@ struct GraphiteController {
             return false
         }
     }
+}
 
+// MARK: - Send Transaction
+
+extension GraphiteController {
     private static func sendTransaction(swapResponse: SwapResponse) async -> [TransactionID]? {
         guard
             let secretKey = WalletKeyManager.getPrivateKey(),
@@ -233,11 +239,15 @@ struct GraphiteController {
             return nil
         }
     }
+}
 
+// MARK: - Send SOL from one Wallet to another
+
+extension GraphiteController {
     private static func sendSolFromOneWalletToAnother() async -> TransactionID? {
 
         let publicKeyFROMString: String = WalletKeyManager.getPublicKey()
-        let publicKeyTOString = "7xA6BAdBrq63MVYVutWTfuHLvKws78n4xLYmSjmrSQ2M"
+        let publicKeyTOString = "7xA6BAdBrq63MVYVutWTfuHLvKws78n4xLYmSjmrSQ2M" // destination wallet
 
         guard
             let publicKeyFROM = try? PublicKey(string: publicKeyFROMString),
@@ -247,7 +257,7 @@ struct GraphiteController {
             return nil
         }
 
-        let sol = CryptoAmount.full(0.999995)
+        let sol = CryptoAmount.full(1)
         let lamports = UInt64(sol.getUnitAmount(for: .sol))
 
         let ti = SystemProgram.transferInstruction(from: publicKeyFROM, to: publicKeyTWO, lamports: lamports)
@@ -303,6 +313,11 @@ struct GraphiteController {
             return nil
         }
     }
+}
+
+// MARK: - Get Solana Balance
+
+extension GraphiteController {
 
     private static func getSolanaBalance() async {
         guard
