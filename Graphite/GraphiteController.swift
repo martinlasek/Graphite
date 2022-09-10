@@ -13,23 +13,23 @@ struct GraphiteController {
 
     /// The entry point of the application.
     static func main() async throws {
-
         Logger.setLoggers([GraphiteLogger()])
+        let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable()
+//        let hasExecutedATrade = await sendSolFromOneWalletToAnother()
+        print("Result: \(hasExecutedATrade)")
+    }
+}
 
-//        guard let txID = await sendSolFromOneWalletToAnother() else {
-//            printError(self, "Did not send a transaction.")
-//            return
-//        }
-//
-//        printSuccess(self, "TaxID: \(txID)")
-//        return
+// MARK: - Try finding and then executing profitable trade
 
+extension GraphiteController {
+    private static func checkPossibleTradeAndExecuteIfProfitable() async -> Bool {
         // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
 
         let quoteRequestUSDT = QuoteRequest(
             inputMint: .sol,
             outputMint: .usdt,
-            inputAmount: .full(0.2),
+            inputAmount: .full(0.1),
             slippage: .percent(0),
             publicKey: WalletKeyManager.getPublicKey()
         )
@@ -40,7 +40,7 @@ struct GraphiteController {
             case .success(let quoteSOL2USDTResponse) = fetchSOLQuoteResponse,
             let data_SOL_2_USDT_Response = quoteSOL2USDTResponse.data.first
         else {
-            return
+            return false
         }
 
         // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
@@ -59,80 +59,48 @@ struct GraphiteController {
             case .success(let quoteUSDT2SOLResponse) = fetchUSDTQuoteResponse,
             let data_USDT_2_SOL_Response = quoteUSDT2SOLResponse.data.first
         else {
-            return
+            return false
         }
 
-        // MARK: - Swap
+        // MARK: - Early return if not profitable
+
+        let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
+        guard isProfitable else {
+            print("✋🏻 Not profitable swap.")
+            return false
+        }
+
+        // MARK: - Get Swap Transactions
 
         guard
             let swap_SOL_2_USDT_Response = await getSwapTransaction(for: data_SOL_2_USDT_Response),
             let swap_USDT_2_SOL_Response = await getSwapTransaction(for: data_USDT_2_SOL_Response)
         else {
-            return
+            return false
         }
 
         logSwapTransaction(swapResonse: swap_SOL_2_USDT_Response, comment: "SOL to USDT")
         logSwapTransaction(swapResonse: swap_USDT_2_SOL_Response, comment: "USDT to SOL")
 
-        let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
-
-        if isProfitable {
-            guard
-                swap_SOL_2_USDT_Response.setupTransaction == nil,
-                swap_SOL_2_USDT_Response.cleanupTransaction == nil,
-                swap_USDT_2_SOL_Response.setupTransaction == nil,
-                swap_USDT_2_SOL_Response.cleanupTransaction == nil
-            else {
-                print("✋🏻 Setup/Cleanup Transaction was not nil.")
-                return
-            }
-
-            // perform transaction
-            if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
-                printSuccess(self, "Transaction sent SOL 2 USDT: \(txID_SOL_2_USDT)")
-                if let txID_USDT_2_SOL = await sendTransaction(swapResponse: swap_USDT_2_SOL_Response) {
-                    printSuccess(self, "Transaction sent USDT 2 SOL: \(txID_USDT_2_SOL)")
-                } else {
-                    printError(self, "FAILED | USDT 2 SOL.")
-                }
+        // perform transaction
+        if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
+            printSuccess(self, "SUCCESS | SOL 2 USDT | txID: \(txID_SOL_2_USDT)")
+            if let txID_USDT_2_SOL = await sendTransaction(swapResponse: swap_USDT_2_SOL_Response) {
+                printSuccess(self, "SUCCESS | USDT 2 SOL | txID: \(txID_USDT_2_SOL)")
             } else {
-                printError(self, "FAILED | SOL 2 USDT.")
+                printError(self, "FAILED | USDT 2 SOL.")
             }
         } else {
-            print("✋🏻 Not profitable swap.")
-        }
-    }
-
-    private static func logSwapTransaction(swapResonse: SwapResponse, comment: String) {
-        let maxChars = 100
-        let setupTx = swapResonse.setupTransaction ?? ""
-        let setupIdx = String.Index(utf16Offset: setupTx.count > maxChars ? maxChars : 0, in: setupTx)
-
-        let swapTx = swapResonse.swapTransaction ?? ""
-        let swapIdx = String.Index(utf16Offset: swapTx.count > maxChars ? maxChars : 0, in: swapTx)
-
-        let cleanupTx = swapResonse.cleanupTransaction ?? ""
-        let cleanupIdx = String.Index(utf16Offset: cleanupTx.count > maxChars ? maxChars : 0, in: cleanupTx)
-
-        print("\n‼️ \(comment)")
-        print("⚙️ SetupTransaction: \(setupTx[..<setupIdx])..")
-        print("🔄 SwapTransaction:\t \(swapTx[..<swapIdx])..")
-        print("🗑 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
-        print()
-    }
-
-    private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
-        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: WalletKeyManager.getPublicKey())
-
-        let fetchSwapResponse = await JupiterApi.fetchSwap(for: swapRequest)
-        guard case .success(let swapResponse) = fetchSwapResponse else {
-            printError(self, "Could not get swap response from \(fetchSwapResponse)")
-            return nil
+            printError(self, "FAILED | SOL 2 USDT.")
         }
 
-        return swapResponse
+        return true
     }
+}
 
+// MARK: - Profit/Loss calculator and logger.
+
+extension GraphiteController {
     /// Logs the input amount and output amount for a swap and also prints profitability.
     private static func isProfitOrLoss(using inputQuote: QuoteResponse, and outputQuote: QuoteResponse) -> Bool {
         guard
@@ -173,8 +141,46 @@ struct GraphiteController {
             return false
         }
     }
+}
 
-    private static func sendTransaction(swapResponse: SwapResponse) async -> TransactionID? {
+// MARK: - Swap Transaction
+
+extension GraphiteController {
+    private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
+        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: WalletKeyManager.getPublicKey())
+
+        let fetchSwapResponse = await JupiterApi.fetchSwap(for: swapRequest)
+        guard case .success(let swapResponse) = fetchSwapResponse else {
+            printError(self, "Could not get swap response from \(fetchSwapResponse)")
+            return nil
+        }
+
+        return swapResponse
+    }
+
+    private static func logSwapTransaction(swapResonse: SwapResponse, comment: String) {
+        let maxChars = 100
+        let setupTx = swapResonse.setupTransaction ?? ""
+        let setupIdx = String.Index(utf16Offset: setupTx.count > maxChars ? maxChars : 0, in: setupTx)
+
+        let swapTx = swapResonse.swapTransaction ?? ""
+        let swapIdx = String.Index(utf16Offset: swapTx.count > maxChars ? maxChars : 0, in: swapTx)
+
+        let cleanupTx = swapResonse.cleanupTransaction ?? ""
+        let cleanupIdx = String.Index(utf16Offset: cleanupTx.count > maxChars ? maxChars : 0, in: cleanupTx)
+
+        print("\n‼️ \(comment)")
+        print("⚙️ SetupTransaction: \(setupTx[..<setupIdx])..")
+        print("🔄 SwapTransaction:\t \(swapTx[..<swapIdx])..")
+        print("🗑 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
+        print()
+    }
+}
+
+// MARK: - Send Transaction
+
+extension GraphiteController {
+    private static func sendTransaction(swapResponse: SwapResponse) async -> [TransactionID]? {
         guard
             let secretKey = WalletKeyManager.getPrivateKey(),
             let account = try? Account(secretKey: Data(secretKey))
@@ -188,62 +194,72 @@ struct GraphiteController {
             network: .mainnetBeta
         )
 
-        guard let swapTransaction = swapResponse.swapTransaction else {
+        let apiClient = JSONRPCAPIClient(endpoint: endpoint)
+        // let blockChainClient = BlockchainClient(apiClient: apiClient)
+
+        guard
+            let swapTransaction = swapResponse.swapTransaction,
+            let swapTx = try? await TransactionManager.createPreparedTransaction(with: swapTransaction, account: account, and: apiClient),
+            let swapTxString = try? swapTx.serialize()
+        else {
             printError(self, "SwapResponse had no swapTransaction.")
             return nil
         }
 
-//        var transactions = [swapTransaction]
-//
-//        if let setupTx = swapResponse.setupTransaction {
-//            transactions.insert(setupTx, at: 0)
-//        }
-//
-//        if let cleanupTx = swapResponse.cleanupTransaction {
-//            transactions.insert(cleanupTx, at: 2)
-//        }
+        // MARK: -  Preparing Transaction array with potential setup/cleanup transaction
 
-        guard
-            let data = Data(base64Encoded: swapTransaction),
-            let transaction = try? Transaction.from(data: data)
-        else {
-            printError(self, "Transaction Test failed")
-            return nil
+        var transactionList = [swapTxString]
+
+        // Prepare SETUP Transaction
+        if let setupTransaction = swapResponse.setupTransaction {
+            guard
+                let setupTx = try? await TransactionManager.createPreparedTransaction(with: setupTransaction, account: account, and: apiClient),
+                let setupTxString = try? setupTx.serialize()
+            else {
+                printError(self, "setupTransaction was given but UNABLE to create PreparedTransaction out of it.")
+                return nil
+            }
+
+            transactionList.insert(setupTxString, at: 0)
         }
 
-        var preparedTxNEW = PreparedTransaction(transaction: transaction, signers: [account], expectedFee: .zero)
+        // Prepare CLEANUP Transaction
+        if let cleanupTransaction = swapResponse.cleanupTransaction {
+            guard
+                let cleanupTx = try? await TransactionManager.createPreparedTransaction(with: cleanupTransaction, account: account, and: apiClient),
+                let cleanupTxString = try? cleanupTx.serialize()
+            else {
+                printError(self, "cleanupTransaction was given but UNABLE to create PreparedTransaction out of it.")
+                return nil
+            }
 
-        let apiClient = JSONRPCAPIClient(endpoint: endpoint)
-        // let blockChainClient = BlockchainClient(apiClient: apiClient)
-
-        guard let recentBlockHash = try? await apiClient.getRecentBlockhash() else {
-            printError(self, "RECENT BLOCK HASH")
-            return nil
+            transactionList.insert(cleanupTxString, at: 2)
         }
 
-        preparedTxNEW.transaction.recentBlockhash = recentBlockHash
+        let requestConf = RequestConfiguration(encoding: "base64", skipPreflight: true)!
 
-        do {
-            try preparedTxNEW.sign()
-        } catch let error {
-            handleSolanaError(id: "SEND TRANSACTION", error)
-            return nil
+        let batchRequestList = transactionList.map {
+            return JSONRPCAPIClient.RequestEncoder.RequestType(method: "sendTransaction", params: [$0, requestConf])
         }
 
         do {
             print("🚀 Sending transaction..")
-            let requestConf = RequestConfiguration(encoding: "base64", skipPreflight: true)!
-            return try await apiClient.sendTransaction(transaction: preparedTxNEW.serialize(), configs: requestConf)
+            let resultList = try await apiClient.batchRequest(with: batchRequestList)
+            return resultList.map { $0.result?.description ?? "------" }
         } catch let error {
             handleSolanaError(id: "SEND TRANSACTION", error)
             return nil
         }
     }
+}
 
+// MARK: - Send SOL from one Wallet to another
+
+extension GraphiteController {
     private static func sendSolFromOneWalletToAnother() async -> TransactionID? {
 
         let publicKeyFROMString: String = WalletKeyManager.getPublicKey()
-        let publicKeyTOString = "7xA6BAdBrq63MVYVutWTfuHLvKws78n4xLYmSjmrSQ2M"
+        let publicKeyTOString = "7xA6BAdBrq63MVYVutWTfuHLvKws78n4xLYmSjmrSQ2M" // destination wallet
 
         guard
             let publicKeyFROM = try? PublicKey(string: publicKeyFROMString),
@@ -253,7 +269,7 @@ struct GraphiteController {
             return nil
         }
 
-        let sol = CryptoAmount.full(0.999995)
+        let sol = CryptoAmount.full(0.2)
         let lamports = UInt64(sol.getUnitAmount(for: .sol))
 
         let ti = SystemProgram.transferInstruction(from: publicKeyFROM, to: publicKeyTWO, lamports: lamports)
@@ -309,6 +325,11 @@ struct GraphiteController {
             return nil
         }
     }
+}
+
+// MARK: - Get Solana Balance
+
+extension GraphiteController {
 
     private static func getSolanaBalance() async {
         guard

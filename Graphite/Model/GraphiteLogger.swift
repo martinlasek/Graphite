@@ -9,7 +9,7 @@ import SolanaSwift
 
 struct GraphiteLogger: SolanaSwiftLogger {
     func log(event: String, data: String?, logLevel: SolanaSwiftLoggerLogLevel) {
-        var dataString = data ?? ""
+        let dataString = data ?? ""
 
         switch logLevel {
         case .info:
