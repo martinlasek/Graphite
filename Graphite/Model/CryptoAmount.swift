@@ -18,7 +18,7 @@ enum CryptoAmount {
     func getUnitAmount(for cryptoCurrency: CryptoCurrency) -> Int {
         switch self {
         case .full(let amount):
-            return Int(amount * cryptoCurrency.decimals)
+            return Int(amount * Double(cryptoCurrency.info.decimals))
         case .unit(let amount):
             return amount
         }
@@ -29,7 +29,7 @@ enum CryptoAmount {
         case .full(let amount):
             return amount
         case .unit(let amount):
-            return Double(amount) / cryptoCurrency.decimals
+            return Double(amount) / Double(cryptoCurrency.info.decimals)
         }
     }
 }

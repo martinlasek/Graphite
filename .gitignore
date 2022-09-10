@@ -1,2 +1,6 @@
 Graphite.xcodeproj/xcshareddata/xcschemes/Graphite.xcscheme
+<<<<<<< HEAD
 Graphite.xcodeproj/project.xcworkspace/xcuserdata/
+=======
+.DS_Store
+>>>>>>> 5274837 (new CryptoInfo object)

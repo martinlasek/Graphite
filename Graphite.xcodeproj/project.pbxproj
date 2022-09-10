@@ -124,9 +124,9 @@
 			isa = PBXGroup;
 			children = (
 				23F1A8FF28B52742005CA130 /* Api.swift */,
+				23EA0CA328C012A40022DC1A /* JupiterApi.swift */,
 				23F1A90728B53290005CA130 /* Request */,
 				23F1A90A28B53AAE005CA130 /* Response */,
-				23EA0CA328C012A40022DC1A /* JupiterApi.swift */,
 			);
 			path = Api;
 			sourceTree = "<group>";

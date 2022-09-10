@@ -27,8 +27,8 @@ struct QuoteRequest: RequestGenerator {
         let slippageString = String(describing: slippage.value)
 
         let queryItems = [
-            URLQueryItem(name: "inputMint", value: inputMint.address),
-            URLQueryItem(name: "outputMint", value: outputMint.address),
+            URLQueryItem(name: "inputMint", value: inputMint.info.address),
+            URLQueryItem(name: "outputMint", value: outputMint.info.address),
             URLQueryItem(name: "amount", value: amountString),
             URLQueryItem(name: "slippage", value: slippageString),
             URLQueryItem(name: "userPublicKey", value: publicKey)

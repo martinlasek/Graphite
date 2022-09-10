@@ -34,8 +34,8 @@ struct Api {
                 return
             }
 
-            if let restaurant = try? JSONDecoder().decode(T.self, from: data) {
-                completionHandler(.success(restaurant))
+            if let decodedResponse = try? JSONDecoder().decode(T.self, from: data) {
+                completionHandler(.success(decodedResponse))
                 return
             }
 
@@ -54,11 +54,11 @@ struct Api {
             return .failure(.couldNotDecodeResponse)
         }
 
-        guard let restaurant = try? JSONDecoder().decode(T.self, from: data) else {
+        guard let decodedResponse = try? JSONDecoder().decode(T.self, from: data) else {
             printError(self, response.debugDescription)
             return .failure(.couldNotDecodeResponse)
         }
 
-        return .success(restaurant)
+        return .success(decodedResponse)
     }
 }
