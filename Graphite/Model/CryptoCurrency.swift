@@ -14,9 +14,9 @@ enum CryptoCurrency {
         switch self {
         case .sol:
             return "So11111111111111111111111111111111111111112"
-        case .usdc:
-            return "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
         case .usdt:
+            return "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+        case .usdc:
             return "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
         }
     }
