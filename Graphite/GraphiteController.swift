@@ -15,6 +15,7 @@ struct GraphiteController {
     static func main() async throws {
         Logger.setLoggers([GraphiteLogger()])
         let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable()
+//        let hasExecutedATrade = await sendSolFromOneWalletToAnother()
         print("Result: \(hasExecutedATrade)")
     }
 }
@@ -28,7 +29,7 @@ extension GraphiteController {
         let quoteRequestUSDT = QuoteRequest(
             inputMint: .sol,
             outputMint: .usdt,
-            inputAmount: .full(0.2),
+            inputAmount: .full(0.1),
             slippage: .percent(0)
         )
 
@@ -95,40 +96,6 @@ extension GraphiteController {
     }
 }
 
-// MARK: - Swap Transaction
-
-extension GraphiteController {
-    private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
-        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: WalletKeyManager.getPublicKey())
-
-        let fetchSwapResponse = await JupiterApi.fetchSwap(for: swapRequest)
-        guard case .success(let swapResponse) = fetchSwapResponse else {
-            printError(self, "Could not get swap response from \(fetchSwapResponse)")
-            return nil
-        }
-
-        return swapResponse
-    }
-
-    private static func logSwapTransaction(swapResonse: SwapResponse, comment: String) {
-        let maxChars = 100
-        let setupTx = swapResonse.setupTransaction ?? ""
-        let setupIdx = String.Index(utf16Offset: setupTx.count > maxChars ? maxChars : 0, in: setupTx)
-
-        let swapTx = swapResonse.swapTransaction ?? ""
-        let swapIdx = String.Index(utf16Offset: swapTx.count > maxChars ? maxChars : 0, in: swapTx)
-
-        let cleanupTx = swapResonse.cleanupTransaction ?? ""
-        let cleanupIdx = String.Index(utf16Offset: cleanupTx.count > maxChars ? maxChars : 0, in: cleanupTx)
-
-        print("\n‼️ \(comment)")
-        print("⚙️ SetupTransaction: \(setupTx[..<setupIdx])..")
-        print("🔄 SwapTransaction:\t \(swapTx[..<swapIdx])..")
-        print("🗑 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
-        print()
-    }
-}
-
 // MARK: - Profit/Loss calculator and logger.
 
 extension GraphiteController {
@@ -171,6 +138,40 @@ extension GraphiteController {
             print("-----\n")
             return false
         }
+    }
+}
+
+// MARK: - Swap Transaction
+
+extension GraphiteController {
+    private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
+        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: WalletKeyManager.getPublicKey())
+
+        let fetchSwapResponse = await JupiterApi.fetchSwap(for: swapRequest)
+        guard case .success(let swapResponse) = fetchSwapResponse else {
+            printError(self, "Could not get swap response from \(fetchSwapResponse)")
+            return nil
+        }
+
+        return swapResponse
+    }
+
+    private static func logSwapTransaction(swapResonse: SwapResponse, comment: String) {
+        let maxChars = 100
+        let setupTx = swapResonse.setupTransaction ?? ""
+        let setupIdx = String.Index(utf16Offset: setupTx.count > maxChars ? maxChars : 0, in: setupTx)
+
+        let swapTx = swapResonse.swapTransaction ?? ""
+        let swapIdx = String.Index(utf16Offset: swapTx.count > maxChars ? maxChars : 0, in: swapTx)
+
+        let cleanupTx = swapResonse.cleanupTransaction ?? ""
+        let cleanupIdx = String.Index(utf16Offset: cleanupTx.count > maxChars ? maxChars : 0, in: cleanupTx)
+
+        print("\n‼️ \(comment)")
+        print("⚙️ SetupTransaction: \(setupTx[..<setupIdx])..")
+        print("🔄 SwapTransaction:\t \(swapTx[..<swapIdx])..")
+        print("🗑 CleanupTransaction:\t \(cleanupTx[..<cleanupIdx])..")
+        print()
     }
 }
 
@@ -266,7 +267,7 @@ extension GraphiteController {
             return nil
         }
 
-        let sol = CryptoAmount.full(1)
+        let sol = CryptoAmount.full(0.2)
         let lamports = UInt64(sol.getUnitAmount(for: .sol))
 
         let ti = SystemProgram.transferInstruction(from: publicKeyFROM, to: publicKeyTWO, lamports: lamports)
