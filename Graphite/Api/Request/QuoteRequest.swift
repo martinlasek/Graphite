@@ -15,6 +15,7 @@ struct QuoteRequest: RequestGenerator {
     let inputAmount: CryptoAmount
     let slippage: Slippage
     let publicKey: String
+    let onlyDirectRoutes: Bool
 
     func createRequest() -> URLRequest? {
         guard var urlComponents = URLComponents(string: quoteUrlString) else {
