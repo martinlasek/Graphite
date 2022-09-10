@@ -14,7 +14,11 @@ struct GraphiteController {
     /// The entry point of the application.
     static func main() async throws {
         Logger.setLoggers([GraphiteLogger()])
-        let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable()
+
+        // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
+        // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
+
+        let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .sol, outputMint: .usdt)
 //        let hasExecutedATrade = await sendSolFromOneWalletToAnother()
         print("Result: \(hasExecutedATrade)")
     }
@@ -23,50 +27,20 @@ struct GraphiteController {
 // MARK: - Try finding and then executing profitable trade
 
 extension GraphiteController {
-    private static func checkPossibleTradeAndExecuteIfProfitable() async -> Bool {
-        // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
-
-        let quoteRequestUSDT = QuoteRequest(
-            inputMint: .sol,
-            outputMint: .usdt,
-            inputAmount: .full(0.1),
-            slippage: .percent(0),
-            publicKey: WalletKeyManager.getPublicKey(),
-            onlyDirectRoutes: false
-        )
-
-        let fetchSOLQuoteResponse = await JupiterApi.fetchQuote(for: quoteRequestUSDT)
+    private static func checkPossibleTradeAndExecuteIfProfitable(inputMint: CryptoCurrency,
+                                                                 outputMint: CryptoCurrency) async -> Bool {
 
         guard
-            case .success(let quoteSOL2USDTResponse) = fetchSOLQuoteResponse,
-            let data_SOL_2_USDT_Response = quoteSOL2USDTResponse.data.first
-        else {
-            return false
-        }
-
-        // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
-
-        let quoteRequestSOL = QuoteRequest(
-            inputMint: .usdt,
-            outputMint: .sol,
-            inputAmount: .unit(data_SOL_2_USDT_Response.outAmount),
-            slippage: .percent(0),
-            publicKey: WalletKeyManager.getPublicKey(),
-            onlyDirectRoutes: false
-        )
-
-        let fetchUSDTQuoteResponse = await JupiterApi.fetchQuote(for: quoteRequestSOL)
-
-        guard
-            case .success(let quoteUSDT2SOLResponse) = fetchUSDTQuoteResponse,
-            let data_USDT_2_SOL_Response = quoteUSDT2SOLResponse.data.first
+            let quoteResponses = await retrieveQuoteData(inputMint: inputMint, outputMint: outputMint),
+            let inputData = quoteResponses.input.data.first,
+            let outputData = quoteResponses.output.data.first
         else {
             return false
         }
 
         // MARK: - Early return if not profitable
 
-        let isProfitable = self.isProfitOrLoss(using: quoteSOL2USDTResponse, and: quoteUSDT2SOLResponse)
+        let isProfitable = self.isProfitOrLoss(using: quoteResponses.input, and: quoteResponses.output)
         guard isProfitable else {
             print("✋🏻 Not profitable swap.")
             return false
@@ -75,28 +49,67 @@ extension GraphiteController {
         // MARK: - Get Swap Transactions
 
         guard
-            let swap_SOL_2_USDT_Response = await getSwapTransaction(for: data_SOL_2_USDT_Response),
-            let swap_USDT_2_SOL_Response = await getSwapTransaction(for: data_USDT_2_SOL_Response)
+            let inputSwapResponse = await getSwapTransaction(for: inputData),
+            let outputSwapResponse = await getSwapTransaction(for: outputData)
         else {
             return false
         }
 
-        logSwapTransaction(swapResonse: swap_SOL_2_USDT_Response, comment: "SOL to USDT")
-        logSwapTransaction(swapResonse: swap_USDT_2_SOL_Response, comment: "USDT to SOL")
+        logSwapTransaction(swapResonse: inputSwapResponse, comment: "\(inputMint.symbol) to \(outputMint.symbol)")
+        logSwapTransaction(swapResonse: outputSwapResponse, comment: "\(outputMint.symbol) to \(inputMint.symbol)")
 
         // perform transaction
-        if let txID_SOL_2_USDT = await sendTransaction(swapResponse: swap_SOL_2_USDT_Response) {
-            printSuccess(self, "SUCCESS | SOL 2 USDT | txID: \(txID_SOL_2_USDT)")
-            if let txID_USDT_2_SOL = await sendTransaction(swapResponse: swap_USDT_2_SOL_Response) {
-                printSuccess(self, "SUCCESS | USDT 2 SOL | txID: \(txID_USDT_2_SOL)")
+        if let input_tx_ID = await sendTransaction(swapResponse: inputSwapResponse) {
+            printSuccess(self, "SUCCESS | \(inputMint.symbol) -> \(outputMint.symbol) | txID: \(input_tx_ID)")
+            if let output_tx_ID = await sendTransaction(swapResponse: outputSwapResponse) {
+                printSuccess(self, "SUCCESS | \(outputMint.symbol) -> \(inputMint.symbol) | txID: \(output_tx_ID)")
             } else {
-                printError(self, "FAILED | USDT 2 SOL.")
+                printError(self, "FAILED | \(outputMint.symbol) -> \(inputMint.symbol).")
             }
         } else {
-            printError(self, "FAILED | SOL 2 USDT.")
+            printError(self, "FAILED | \(inputMint.symbol) -> \(outputMint.symbol).")
         }
 
         return true
+    }
+}
+
+extension GraphiteController {
+    // Fetches 2 QuoteRequests - one for each CryptoCurrency in exchange for each other
+    private static func retrieveQuoteData(inputMint: CryptoCurrency,
+                                          outputMint: CryptoCurrency) async -> (input: QuoteResponse, output: QuoteResponse)? {
+        let quoteInputOutput = QuoteRequest(
+            inputMint: inputMint,
+            outputMint: outputMint,
+            inputAmount: .full(0.1),
+            slippage: .percent(0),
+            publicKey: WalletKeyManager.getPublicKey(),
+            onlyDirectRoutes: false
+        )
+
+        guard
+            case .success(let inputOutput) = await JupiterApi.fetchQuote(for: quoteInputOutput),
+            let inputOutputData = inputOutput.data.first
+        else {
+            return nil
+        }
+
+        let quoteOutputInput = QuoteRequest(
+            inputMint: outputMint,
+            outputMint: inputMint,
+            inputAmount: .unit(inputOutputData.outAmount),
+            slippage: .percent(0),
+            publicKey: WalletKeyManager.getPublicKey(),
+            onlyDirectRoutes: false
+        )
+
+        guard
+            case .success(let outputInput) = await JupiterApi.fetchQuote(for: quoteOutputInput)
+        else {
+            return nil
+        }
+
+        return (inputOutput, outputInput)
     }
 }
 
@@ -107,23 +120,28 @@ extension GraphiteController {
     private static func isProfitOrLoss(using inputQuote: QuoteResponse, and outputQuote: QuoteResponse) -> Bool {
         guard
             let inputMarketResponse = inputQuote.data.first?.marketInfos.first,
-            let outputMarketResponse = outputQuote.data.first?.marketInfos.first
+            let outputMarketResponse = outputQuote.data.first?.marketInfos.first,
+            let inputMint = inputMarketResponse.inputMint,
+            let outputMint = inputMarketResponse.outputMint
         else {
             return false
         }
 
-        let inAmount = CryptoAmount.unit(inputMarketResponse.inAmount).getFullAmount(for: .sol)
-        let outDollar = CryptoAmount.unit(inputMarketResponse.outAmount).getFullAmount(for: .usdt)
+        let input = CryptoCurrency(with: inputMint)
+        let output = CryptoCurrency(with: outputMint)
 
-        let inDollar = CryptoAmount.unit(outputMarketResponse.inAmount).getFullAmount(for: .usdt)
-        let outAmount = CryptoAmount.unit(outputMarketResponse.outAmount).getFullAmount(for: .sol)
+        let inAmount = CryptoAmount.unit(inputMarketResponse.inAmount).getFullAmount(for: input)
+        let outDollar = CryptoAmount.unit(inputMarketResponse.outAmount).getFullAmount(for: output)
+
+        let inDollar = CryptoAmount.unit(outputMarketResponse.inAmount).getFullAmount(for: output)
+        let outAmount = CryptoAmount.unit(outputMarketResponse.outAmount).getFullAmount(for: input)
 
         print("\n-----")
-        print("➡️ SEND:\t \(inAmount) \t\t\t SOL \t\t DEX: \(inputMarketResponse.label ?? "")")
-        print("💵 GET:\t\t \(outDollar) \t\t DOLLAR")
+        print("➡️ SEND:\t \(inAmount) \t\t\t \(input.symbol) \t\t DEX: \(inputMarketResponse.label ?? "")")
+        print("💵 GET:\t\t \(outDollar) \t\t \(output.symbol)")
         print()
-        print("💵 SEND:\t \(inDollar) \t\t DOLLAR")
-        print("⬅️ GET:\t\t \(outAmount)\t SOL \t\t DEX: \(outputMarketResponse.label ?? "")")
+        print("💵 SEND:\t \(inDollar) \t\t \(output.symbol)")
+        print("⬅️ GET:\t\t \(outAmount)\t \(input.symbol) \t\t DEX: \(outputMarketResponse.label ?? "")")
         print()
 
         if outAmount >= inAmount && outAmount < inAmount * 2 {
