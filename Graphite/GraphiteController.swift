@@ -31,7 +31,8 @@ struct GraphiteController {
             outputMint: .usdt,
             inputAmount: .full(0.2),
             slippage: .percent(0),
-            publicKey: WalletKeyManager.getPublicKey()
+            publicKey: WalletKeyManager.getPublicKey(),
+            onlyDirectRoutes: false
         )
 
         let fetchSOLQuoteResponse = await JupiterApi.fetchQuote(for: quoteRequestUSDT)
@@ -50,7 +51,8 @@ struct GraphiteController {
             outputMint: .sol,
             inputAmount: .unit(data_SOL_2_USDT_Response.outAmount),
             slippage: .percent(0),
-            publicKey: WalletKeyManager.getPublicKey()
+            publicKey: WalletKeyManager.getPublicKey(),
+            onlyDirectRoutes: false
         )
 
         let fetchUSDTQuoteResponse = await JupiterApi.fetchQuote(for: quoteRequestSOL)
