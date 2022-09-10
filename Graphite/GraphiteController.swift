@@ -55,19 +55,19 @@ extension GraphiteController {
             return false
         }
 
-        logSwapTransaction(swapResonse: inputSwapResponse, comment: "\(inputMint.symbol) to \(outputMint.symbol)")
-        logSwapTransaction(swapResonse: outputSwapResponse, comment: "\(outputMint.symbol) to \(inputMint.symbol)")
+        logSwapTransaction(swapResonse: inputSwapResponse, comment: "\(inputMint.info.symbol) to \(outputMint.info.symbol)")
+        logSwapTransaction(swapResonse: outputSwapResponse, comment: "\(outputMint.info.symbol) to \(inputMint.info.symbol)")
 
         // perform transaction
         if let input_tx_ID = await sendTransaction(swapResponse: inputSwapResponse) {
-            printSuccess(self, "SUCCESS | \(inputMint.symbol) -> \(outputMint.symbol) | txID: \(input_tx_ID)")
+            printSuccess(self, "SUCCESS | \(inputMint.info.symbol) -> \(outputMint.info.symbol) | txID: \(input_tx_ID)")
             if let output_tx_ID = await sendTransaction(swapResponse: outputSwapResponse) {
-                printSuccess(self, "SUCCESS | \(outputMint.symbol) -> \(inputMint.symbol) | txID: \(output_tx_ID)")
+                printSuccess(self, "SUCCESS | \(outputMint.info.symbol) -> \(inputMint.info.symbol) | txID: \(output_tx_ID)")
             } else {
-                printError(self, "FAILED | \(outputMint.symbol) -> \(inputMint.symbol).")
+                printError(self, "FAILED | \(outputMint.info.symbol) -> \(inputMint.info.symbol).")
             }
         } else {
-            printError(self, "FAILED | \(inputMint.symbol) -> \(outputMint.symbol).")
+            printError(self, "FAILED | \(inputMint.info.symbol) -> \(outputMint.info.symbol).")
         }
 
         return true
@@ -137,11 +137,11 @@ extension GraphiteController {
         let outAmount = CryptoAmount.unit(outputMarketResponse.outAmount).getFullAmount(for: input)
 
         print("\n-----")
-        print("➡️ SEND:\t \(inAmount) \t\t\t \(input.symbol) \t\t DEX: \(inputMarketResponse.label ?? "")")
-        print("💵 GET:\t\t \(outDollar) \t\t \(output.symbol)")
+        print("➡️ SEND:\t \(inAmount) \t\t\t \(input.info.symbol) \t\t DEX: \(inputMarketResponse.label ?? "")")
+        print("💵 GET:\t\t \(outDollar) \t\t \(output.info.symbol)")
         print()
-        print("💵 SEND:\t \(inDollar) \t\t \(output.symbol)")
-        print("⬅️ GET:\t\t \(outAmount)\t \(input.symbol) \t\t DEX: \(outputMarketResponse.label ?? "")")
+        print("💵 SEND:\t \(inDollar) \t\t \(output.info.symbol)")
+        print("⬅️ GET:\t\t \(outAmount)\t \(input.info.symbol) \t\t DEX: \(outputMarketResponse.label ?? "")")
         print()
 
         if outAmount >= inAmount && outAmount < inAmount * 2 {
