@@ -18,17 +18,27 @@ struct GraphiteController {
         // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
         // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
 
-        let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .sol, outputMint: .usdt)
+        while true {
+            let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .sol, outputMint: .usdc)
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+
+            if hasExecutedATrade {
+                print(DateTimeManager.currentTime())
+                break
+            }
+        }
 //        let hasExecutedATrade = await sendSolFromOneWalletToAnother()
-        print("Result: \(hasExecutedATrade)")
+
     }
 }
 
 // MARK: - Try finding and then executing profitable trade
 
 extension GraphiteController {
-    private static func checkPossibleTradeAndExecuteIfProfitable(inputMint: CryptoCurrency,
-                                                                 outputMint: CryptoCurrency) async -> Bool {
+    private static func checkPossibleTradeAndExecuteIfProfitable(
+        inputMint: CryptoCurrency,
+        outputMint: CryptoCurrency
+    ) async -> Bool {
 
         guard
             let quoteResponses = await retrieveQuoteData(inputMint: inputMint, outputMint: outputMint),
@@ -40,7 +50,7 @@ extension GraphiteController {
 
         // MARK: - Early return if not profitable
 
-        let isProfitable = self.isProfitOrLoss(using: quoteResponses.input, and: quoteResponses.output)
+        let isProfitable = self.isProfitable(using: quoteResponses.input, and: quoteResponses.output)
         guard isProfitable else {
             print("✋🏻 Not profitable swap.")
             return false
@@ -123,8 +133,12 @@ extension GraphiteController {
 
 extension GraphiteController {
     /// Logs the input amount and output amount for a swap and also prints profitability.
-    private static func isProfitOrLoss(using inputQuote: QuoteResponse, and outputQuote: QuoteResponse) -> Bool {
+    private static func isProfitable(using inputQuote: QuoteResponse, and outputQuote: QuoteResponse) -> Bool {
         guard
+            let inputFees = inputQuote.data.first?.fees,
+            let inputTotalFeeAndDeposits = inputFees.totalFeeAndDeposits,
+            let outputFees = outputQuote.data.first?.fees,
+            let outputTotalFeeAndDeposits = outputFees.totalFeeAndDeposits,
             let inputMarketResponse = inputQuote.data.first?.marketInfos.first,
             let outputMarketResponse = outputQuote.data.first?.marketInfos.first,
             let inputMint = inputMarketResponse.inputMint,
@@ -147,21 +161,26 @@ extension GraphiteController {
         print("💵 GET:\t\t \(outDollar) \t\t \(output.info.symbol)")
         print()
         print("💵 SEND:\t \(inDollar) \t\t \(output.info.symbol)")
-        print("⬅️ GET:\t\t \(outAmount)\t \(input.info.symbol) \t\t DEX: \(outputMarketResponse.label ?? "")")
+        print("⬅️ GET:\t\t \(outAmount) \t \(input.info.symbol) \t\t DEX: \(outputMarketResponse.label ?? "")")
         print()
 
-        if outAmount >= inAmount && outAmount < inAmount * 2 {
-            let diff = outAmount - inAmount
-            print("🤑 PROFIT:\t \(String(format: "%.9f", diff))")
-            print("-----\n")
-            return true
-        } else if outAmount >= inAmount {
-            let diff = inAmount - outAmount
+        let amountToBeInvested = inAmount + CryptoAmount.unit(inputTotalFeeAndDeposits).getFullAmount(for: .sol) + CryptoAmount.unit(outputTotalFeeAndDeposits).getFullAmount(for: .sol)
+        let ridiculousProfitConstraint = inAmount * 2
+
+        if outAmount > ridiculousProfitConstraint {
+            let diff = outAmount - amountToBeInvested
             print("⚠️ TOO MUCH PROFIT - UNREALISTIC:\t \(String(format: "%.9f", diff))")
             print("-----\n")
             return false
+        }
+
+        if outAmount > amountToBeInvested {
+            let diff = outAmount - amountToBeInvested
+            print("🤑 PROFIT:\t \(String(format: "%.9f", diff))")
+            print("-----\n")
+            return true
         } else {
-            let diff = inAmount - outAmount
+            let diff = amountToBeInvested - outAmount
             print("🥵 LOSS:\t \(String(format: "%.9f", diff))")
             print("-----\n")
             return false

@@ -14,6 +14,7 @@
 		232A173628B1FDA200D6B86A /* Base58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173528B1FDA200D6B86A /* Base58.swift */; };
 		232A173C28B2C5FC00D6B86A /* WalletKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173B28B2C5FC00D6B86A /* WalletKeyManager.swift */; };
 		2374B16828C99C2A00AC216E /* SolanaSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2374B16728C99C2A00AC216E /* SolanaSwift */; };
+		238DF3A328CEA86900B63FC4 /* DateTimeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238DF3A228CEA86900B63FC4 /* DateTimeManager.swift */; };
 		23A1D7B128CAF9B200438578 /* TransactionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23A1D7B028CAF9B200438578 /* TransactionManager.swift */; };
 		23B5489628C404460039A410 /* GraphiteLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B5489528C404460039A410 /* GraphiteLogger.swift */; };
 		23EA0CA428C012A40022DC1A /* JupiterApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23EA0CA328C012A40022DC1A /* JupiterApi.swift */; };
@@ -48,6 +49,8 @@
 		232A173B28B2C5FC00D6B86A /* WalletKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletKeyManager.swift; sourceTree = "<group>"; };
 		232A174028B2DB9000D6B86A /* private-key-setup.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "private-key-setup.gif"; sourceTree = "<group>"; };
 		232A174128B2DBC500D6B86A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		238DF3A128CE93D200B63FC4 /* jupiter-tokens.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "jupiter-tokens.json"; sourceTree = "<group>"; };
+		238DF3A228CEA86900B63FC4 /* DateTimeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeManager.swift; sourceTree = "<group>"; };
 		23A1D7B028CAF9B200438578 /* TransactionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionManager.swift; sourceTree = "<group>"; };
 		23B5489528C404460039A410 /* GraphiteLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphiteLogger.swift; sourceTree = "<group>"; };
 		23EA0CA328C012A40022DC1A /* JupiterApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JupiterApi.swift; sourceTree = "<group>"; };
@@ -104,6 +107,7 @@
 		232A173F28B2DB8400D6B86A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				238DF3A128CE93D200B63FC4 /* jupiter-tokens.json */,
 				232A174028B2DB9000D6B86A /* private-key-setup.gif */,
 			);
 			path = Resources;
@@ -138,6 +142,7 @@
 				232A173528B1FDA200D6B86A /* Base58.swift */,
 				23F1A90328B52A36005CA130 /* Print+Precisely.swift */,
 				23A1D7B028CAF9B200438578 /* TransactionManager.swift */,
+				238DF3A228CEA86900B63FC4 /* DateTimeManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -230,6 +235,7 @@
 				23F1A90428B52A36005CA130 /* Print+Precisely.swift in Sources */,
 				23F1A90028B52742005CA130 /* Api.swift in Sources */,
 				23A1D7B128CAF9B200438578 /* TransactionManager.swift in Sources */,
+				238DF3A328CEA86900B63FC4 /* DateTimeManager.swift in Sources */,
 				06E488C328BC521600294009 /* RouteRequest.swift in Sources */,
 				06E488C028BC430E00294009 /* SwapResponse.swift in Sources */,
 				23F1A8FE28B525B8005CA130 /* QuoteResponse.swift in Sources */,
