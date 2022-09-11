@@ -9,56 +9,101 @@ enum CryptoCurrency {
     case sol
     case usdc
     case usdt
-    case none
-
-    var symbol: String {
-        switch self {
-        case .sol:
-            return "SOL"
-        case .usdc:
-            return "USDC"
-        case .usdt:
-            return "USDT"
-        case .none:
-            return ""
-        }
-    }
+    case btc
+    case eth
+    case unsupported(String)
 
     // Initialize by token address.
     init(with address: String) {
         switch address {
-        case CryptoCurrency.sol.address:
+        case CryptoCurrency.sol.info.address:
             self = .sol
-        case CryptoCurrency.usdc.address:
+        case CryptoCurrency.usdc.info.address:
             self = .usdc
-        case CryptoCurrency.usdt.address:
+        case CryptoCurrency.usdt.info.address:
             self = .usdt
+        case CryptoCurrency.btc.info.address:
+            self = .btc
         default:
-            self = .none
+            self = .unsupported(address)
         }
     }
+}
 
-    var address: String {
+extension CryptoCurrency {
+    struct CryptoInfo {
+        let chainId: Int
+        let address: String
+        let symbol: String
+        let name: String
+        let decimals: Int
+        let logoUrlString: String
+        let website: String
+    }
+
+    var info: CryptoInfo {
         switch self {
         case .sol:
-            return "So11111111111111111111111111111111111111112"
+            return CryptoInfo(
+                chainId: 101,
+                address: "So11111111111111111111111111111111111111112",
+                symbol: "SOL",
+                name: "Wrapped SOL",
+                decimals: 1_000_000_000,
+                logoUrlString: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
+                website: "https://solana.com/"
+            )
         case .usdc:
-            return "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            return CryptoInfo(
+                chainId: 101,
+                address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                symbol: "USDC",
+                name: "USD Coin",
+                decimals: 1_000_000,
+                logoUrlString: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
+                website: "https://www.centre.io/"
+            )
         case .usdt:
-            return "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
-        case .none:
-            return ""
-        }
-    }
+            return CryptoInfo(
+                chainId: 101,
+                address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+                symbol: "USDT",
+                name: "USDT",
+                decimals: 1_000_000,
+                logoUrlString: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg",
+                website: "https://tether.to/"
+            )
+        case .btc:
+            return CryptoInfo(
+                chainId: 101,
+                address: "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E",
+                symbol: "BTC",
+                name: "Wrapped Bitcoin (Sollet)",
+                decimals: 1_000_000,
+                logoUrlString: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E/logo.png",
+                website: "https://bitcoin.org/"
+            )
 
-    var decimals: Double {
-        switch self {
-        case .sol:
-            return 1_000_000_000
-        case .usdc, .usdt:
-            return 1_000_000
-        case .none:
-            return 0.0
+        case .eth:
+            return CryptoInfo(
+                chainId: 101,
+                address: "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
+                symbol: "ETH",
+                name: "Ether (Portal)",
+                decimals: 100_000_000,
+                logoUrlString: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png",
+                website: "https://ethereum.org/en/"
+            )
+        case .unsupported(let address):
+            return CryptoInfo(
+                chainId: 0,
+                address: address,
+                symbol: "unknown",
+                name: "unknown",
+                decimals: 0,
+                logoUrlString: "unknown",
+                website: "unknown"
+            )
         }
     }
 }
