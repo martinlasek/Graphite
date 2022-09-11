@@ -76,14 +76,20 @@ extension GraphiteController {
 
 extension GraphiteController {
     // Fetches 2 QuoteRequests - one for each CryptoCurrency in exchange for each other
-    private static func retrieveQuoteData(inputMint: CryptoCurrency,
-                                          outputMint: CryptoCurrency) async -> (input: QuoteResponse, output: QuoteResponse)? {
+    private static func retrieveQuoteData(
+        inputMint: CryptoCurrency,
+        outputMint: CryptoCurrency
+    ) async -> (input: QuoteResponse, output: QuoteResponse)? {
+        guard let publicKeyString = WalletKeyManager.getPublicKeyString() else {
+            return nil
+        }
+
         let quoteInputOutput = QuoteRequest(
             inputMint: inputMint,
             outputMint: outputMint,
             inputAmount: .full(0.1),
             slippage: .percent(0),
-            publicKey: WalletKeyManager.getPublicKey(),
+            publicKey: publicKeyString,
             onlyDirectRoutes: false
         )
 
@@ -99,7 +105,7 @@ extension GraphiteController {
             outputMint: inputMint,
             inputAmount: .unit(inputOutputData.outAmount),
             slippage: .percent(0),
-            publicKey: WalletKeyManager.getPublicKey(),
+            publicKey: publicKeyString,
             onlyDirectRoutes: false
         )
 
@@ -167,7 +173,11 @@ extension GraphiteController {
 
 extension GraphiteController {
     private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
-        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: WalletKeyManager.getPublicKey())
+        guard let publicKeyString = WalletKeyManager.getPublicKeyString() else {
+            return nil
+        }
+
+        let swapRequest = SwapRequest(dataResponse: quote, userPublicKey: publicKeyString)
 
         let fetchSwapResponse = await JupiterApi.fetchSwap(for: swapRequest)
         guard case .success(let swapResponse) = fetchSwapResponse else {
@@ -278,7 +288,10 @@ extension GraphiteController {
 extension GraphiteController {
     private static func sendSolFromOneWalletToAnother() async -> TransactionID? {
 
-        let publicKeyFROMString: String = WalletKeyManager.getPublicKey()
+        guard let publicKeyFROMString = WalletKeyManager.getPublicKeyString() else {
+            return nil
+        }
+
         let publicKeyTOString = "7xA6BAdBrq63MVYVutWTfuHLvKws78n4xLYmSjmrSQ2M" // destination wallet
 
         guard
