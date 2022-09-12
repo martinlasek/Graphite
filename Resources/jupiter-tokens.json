@@ -879,21 +879,6 @@
   },
   {
     "chainId": 101,
-    "address": "z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M",
-    "symbol": "OXY",
-    "name": "Oxygen Protocol",
-    "decimals": 6,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M/logo.svg",
-    "extensions": {
-      "coingeckoId": "oxygen",
-      "serumV3Usdc": "GZ3WBFsqntmERPwumFEYgrX2B7J7G11MzNZAy7Hje27X",
-      "serumV3Usdt": "GKLev6UHeX1KSDCyo2bzyG6wqhByEzDBkmYTxEdmYJgB",
-      "waterfallbot": "https://bit.ly/OXYwaterfall",
-      "website": "https://www.oxygen.org/"
-    }
-  },
-  {
-    "chainId": 101,
     "address": "FtgGSFADXBtroxq8VCausXRr2of47QBf5AS1NtZCu4GD",
     "symbol": "BRZ",
     "name": "BRZ",
@@ -902,21 +887,6 @@
     "extensions": {
       "coingeckoId": "brz",
       "website": "https://brztoken.io/"
-    }
-  },
-  {
-    "chainId": 101,
-    "address": "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
-    "symbol": "RAY",
-    "name": "Raydium",
-    "decimals": 6,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png",
-    "extensions": {
-      "coingeckoId": "raydium",
-      "serumV3Usdc": "2xiv8A5xrJ7RnGdxXB42uFEkYHJjszEhaJyKKt4WaLep",
-      "serumV3Usdt": "teE55QrL4a4QSfydR9dnHF97jgCfptpuigbb53Lo95g",
-      "waterfallbot": "https://bit.ly/RAYwaterfall",
-      "website": "https://raydium.io/"
     }
   },
   {
