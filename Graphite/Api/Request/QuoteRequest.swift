@@ -31,7 +31,8 @@ struct QuoteRequest: RequestGenerator {
             URLQueryItem(name: "outputMint", value: outputMint.info.address),
             URLQueryItem(name: "amount", value: amountString),
             URLQueryItem(name: "slippage", value: slippageString),
-            URLQueryItem(name: "userPublicKey", value: publicKey)
+            URLQueryItem(name: "userPublicKey", value: publicKey),
+            URLQueryItem(name: "onlyDirectRoutes", value: String(onlyDirectRoutes))
         ]
 
         urlComponents.queryItems = queryItems
