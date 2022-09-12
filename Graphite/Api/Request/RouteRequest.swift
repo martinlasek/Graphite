@@ -11,5 +11,5 @@ struct RouteRequest: Codable {
     let inAmount: Int
     let outAmount: Int
     let priceImpactPct: Double
-    let marketInfos: [QuoteResponse.MarketInfoResponse]
+    let marketInfos: [QuoteResponse.MarketInfo]
 }

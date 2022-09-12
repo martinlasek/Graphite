@@ -8,11 +8,11 @@
 import Foundation
 
 struct QuoteResponse: Codable {
-    let data: [DataResponse]
+    let data: [Transaction]
     let timeTaken: Double
     let contextSlot: String
 
-    struct DataResponse: Codable {
+    struct Transaction: Codable {
         let inAmount: Int
 
         /// Unit representation of the `amount` you'd get in return for the `inAmount` given.
@@ -25,30 +25,30 @@ struct QuoteResponse: Codable {
         let otherAmountThreshold: Int?
         let outAmountWithSlippage: Int?
         let swapMode: String?
-        let marketInfos: [MarketInfoResponse]
+        let marketInfos: [MarketInfo]
         let fees: Fees
     }
 
-    struct MarketInfoResponse: Codable {
+    struct MarketInfo: Codable {
         let id: String?
         let label: String?
         let inputMint: String?
         let outputMint: String?
         let inAmount: Int
         let outAmount: Int
-        let lpFee: LiquidityProviderFeeResponse?
-        let platformFee: PlatformFeeResponse?
+        let lpFee: LiquidityProviderFee?
+        let platformFee: PlatformFee?
         let notEnoughLiquidity: Bool?
         let priceImpactPct: Double?
     }
 
-    struct LiquidityProviderFeeResponse: Codable {
+    struct LiquidityProviderFee: Codable {
         let amount: Int?
         let mint: String?
         let pct: Double?
     }
 
-    struct PlatformFeeResponse: Codable {
+    struct PlatformFee: Codable {
         let amount: Int?
         let mint: String?
         let pct: Int?
@@ -60,5 +60,37 @@ struct QuoteResponse: Codable {
         let ataDeposits: [Int]?
         let totalFeeAndDeposits: Int?
         let minimumSOLForTransaction: Int?
+    }
+}
+
+extension QuoteResponse.Transaction {
+    func printMarketInfo() {
+        for info in self.marketInfos {
+            info.printInfo()
+        }
+    }
+}
+
+extension QuoteResponse.MarketInfo {
+    func printInfo() {
+        guard
+            let exchange = self.label,
+            let inMint = self.inputMint,
+            let outMint = self.outputMint
+        else {
+            return
+        }
+
+        let inputCoin = CryptoCurrency(with: inMint)
+        let outputCoin = CryptoCurrency(with: outMint)
+
+        let inAmountFull = CryptoAmount.unit(self.inAmount).getFullAmount(for: inputCoin)
+        let outAmountFull = CryptoAmount.unit(self.outAmount).getFullAmount(for: outputCoin)
+
+        let exchangeString = "DEX: \(exchange)\n\n"
+        let sendString = "➡️ SEND:\t \(inAmountFull) \(inputCoin.info.symbol)\n"
+        let getString =  "💵 GET:\t\t \(outAmountFull) \(outputCoin.info.symbol)"
+
+        print("\(exchangeString + sendString + getString)")
     }
 }

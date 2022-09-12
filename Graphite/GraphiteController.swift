@@ -19,7 +19,7 @@ struct GraphiteController {
         // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
 
         while true {
-            let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .sol, outputMint: .usdc)
+            let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .usdc, outputMint: .oxy)
             try await Task.sleep(nanoseconds: 1_000_000_000)
 
             if hasExecutedATrade {
@@ -94,38 +94,38 @@ extension GraphiteController {
             return nil
         }
 
-        let quoteInputOutput = QuoteRequest(
+        let firstQuote = QuoteRequest(
             inputMint: inputMint,
             outputMint: outputMint,
-            inputAmount: .full(0.1),
+            inputAmount: .full(10),
             slippage: .percent(0),
             publicKey: publicKeyString,
             onlyDirectRoutes: false
         )
 
         guard
-            case .success(let inputOutput) = await JupiterApi.fetchQuote(for: quoteInputOutput),
-            let inputOutputData = inputOutput.data.first
+            case .success(let firstQuoteResponse) = await JupiterApi.fetchQuote(for: firstQuote),
+            let firstTransaction = firstQuoteResponse.data.first
         else {
             return nil
         }
 
-        let quoteOutputInput = QuoteRequest(
+        let secondQuote = QuoteRequest(
             inputMint: outputMint,
             outputMint: inputMint,
-            inputAmount: .unit(inputOutputData.outAmount),
+            inputAmount: .unit(firstTransaction.outAmount),
             slippage: .percent(0),
             publicKey: publicKeyString,
             onlyDirectRoutes: false
         )
 
         guard
-            case .success(let outputInput) = await JupiterApi.fetchQuote(for: quoteOutputInput)
+            case .success(let secondQuoteResponse) = await JupiterApi.fetchQuote(for: secondQuote)
         else {
             return nil
         }
 
-        return (inputOutput, outputInput)
+        return (firstQuoteResponse, secondQuoteResponse)
     }
 }
 
@@ -133,56 +133,56 @@ extension GraphiteController {
 
 extension GraphiteController {
     /// Logs the input amount and output amount for a swap and also prints profitability.
-    private static func isProfitable(using inputQuote: QuoteResponse, and outputQuote: QuoteResponse) -> Bool {
+    private static func isProfitable(using firstQuote: QuoteResponse, and secondQuote: QuoteResponse) -> Bool {
         guard
-            let inputFees = inputQuote.data.first?.fees,
-            let inputTotalFeeAndDeposits = inputFees.totalFeeAndDeposits,
-            let outputFees = outputQuote.data.first?.fees,
-            let outputTotalFeeAndDeposits = outputFees.totalFeeAndDeposits,
-            let inputMarketResponse = inputQuote.data.first?.marketInfos.first,
-            let outputMarketResponse = outputQuote.data.first?.marketInfos.first,
-            let inputMint = inputMarketResponse.inputMint,
-            let outputMint = inputMarketResponse.outputMint
+            let firstTransaction = firstQuote.data.first,
+            let secondTransaction = secondQuote.data.first
         else {
             return false
         }
 
-        let input = CryptoCurrency(with: inputMint)
-        let output = CryptoCurrency(with: outputMint)
+        print("\n-----INPUT-------")
+        firstTransaction.printMarketInfo()
+        print("\n------------------")
 
-        let inAmount = CryptoAmount.unit(inputMarketResponse.inAmount).getFullAmount(for: input)
-        let outDollar = CryptoAmount.unit(inputMarketResponse.outAmount).getFullAmount(for: output)
+        print("\n-----OUTPUT-------")
+        secondTransaction.printMarketInfo()
+        print("\n------------------")
 
-        let inDollar = CryptoAmount.unit(outputMarketResponse.inAmount).getFullAmount(for: output)
-        let outAmount = CryptoAmount.unit(outputMarketResponse.outAmount).getFullAmount(for: input)
-
-        print("\n-----")
-        print("➡️ SEND:\t \(inAmount) \t\t\t \(input.info.symbol) \t\t DEX: \(inputMarketResponse.label ?? "")")
-        print("💵 GET:\t\t \(outDollar) \t\t \(output.info.symbol)")
-        print()
-        print("💵 SEND:\t \(inDollar) \t\t \(output.info.symbol)")
-        print("⬅️ GET:\t\t \(outAmount) \t \(input.info.symbol) \t\t DEX: \(outputMarketResponse.label ?? "")")
-        print()
-
-        let amountToBeInvested = inAmount + CryptoAmount.unit(inputTotalFeeAndDeposits).getFullAmount(for: .sol) + CryptoAmount.unit(outputTotalFeeAndDeposits).getFullAmount(for: .sol)
-        let ridiculousProfitConstraint = inAmount * 2
-
-        if outAmount > ridiculousProfitConstraint {
-            let diff = outAmount - amountToBeInvested
-            print("⚠️ TOO MUCH PROFIT - UNREALISTIC:\t \(String(format: "%.9f", diff))")
-            print("-----\n")
+        guard
+            let firstMarketData = firstTransaction.marketInfos.first,
+            let lastMarketData = secondTransaction.marketInfos.last,
+            let inputMint = firstMarketData.inputMint
+        else {
             return false
         }
 
-        if outAmount > amountToBeInvested {
-            let diff = outAmount - amountToBeInvested
+        let baseCoin = CryptoCurrency(with: inputMint)
+
+        let inAmountFull = CryptoAmount.unit(firstMarketData.inAmount).getFullAmount(for: baseCoin)
+        let outAmountFull = CryptoAmount.unit(lastMarketData.outAmount).getFullAmount(for: baseCoin)
+
+        if outAmountFull > inAmountFull {
+            let diff = outAmountFull - inAmountFull
             print("🤑 PROFIT:\t \(String(format: "%.9f", diff))")
             print("-----\n")
             return true
         } else {
-            let diff = amountToBeInvested - outAmount
+            let diff = inAmountFull - outAmountFull
             print("🥵 LOSS:\t \(String(format: "%.9f", diff))")
             print("-----\n")
+            return false
+        }
+
+        // TODO: Calculate Fees
+
+        let inputFees = firstTransaction.fees
+        let outputFees = secondTransaction.fees
+
+        guard
+            let inputTotalFeeAndDeposits = inputFees.totalFeeAndDeposits,
+            let outputTotalFeeAndDeposits = outputFees.totalFeeAndDeposits
+        else {
             return false
         }
     }
@@ -191,7 +191,7 @@ extension GraphiteController {
 // MARK: - Swap Transaction
 
 extension GraphiteController {
-    private static func getSwapTransaction(for quote: QuoteResponse.DataResponse) async -> SwapResponse? {
+    private static func getSwapTransaction(for quote: QuoteResponse.Transaction) async -> SwapResponse? {
         guard let publicKeyString = WalletKeyManager.getPublicKeyString() else {
             return nil
         }
