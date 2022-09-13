@@ -14,6 +14,7 @@ enum CryptoCurrency {
     case mango
     case orca
     case oxy
+    case polis
     case prt
     case ray
     case rin
@@ -44,6 +45,8 @@ enum CryptoCurrency {
             self = .orca
         case CryptoCurrency.oxy.info.address:
             self = .oxy
+        case CryptoCurrency.polis.info.address:
+            self = .polis
         case CryptoCurrency.prt.info.address:
             self = .prt
         case CryptoCurrency.ray.info.address:
@@ -150,6 +153,16 @@ extension CryptoCurrency {
                 decimals: 6,
                 logoUrlString: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/z3dn17yLaGMKffVogeFHQ9zWVcXgqgf3PQnDsNs2g6M/logo.svg",
                 website: "https://www.oxygen.org/"
+            )
+        case .polis:
+            return CryptoInfo(
+                chainId: 101,
+                address: "poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk",
+                symbol: "POLIS",
+                name: "Star Atlas DAO",
+                decimals: 8,
+                logoUrlString: "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk/logo.png",
+                website: "https://staratlas.com"
             )
         case .prt:
             return CryptoInfo(

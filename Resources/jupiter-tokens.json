@@ -1214,24 +1214,6 @@
   },
   {
     "chainId": 101,
-    "address": "poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk",
-    "symbol": "POLIS",
-    "name": "Star Atlas DAO",
-    "decimals": 8,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk/logo.png",
-    "tags": [
-      "utility-token"
-    ],
-    "extensions": {
-      "coingeckoId": "star-atlas-dao",
-      "description": "Star Atlas DAO Token",
-      "serumV3Usdc": "HxFLKUAmAMLz1jtT3hbvCMELwH5H9tpM2QugP8sKyfhW",
-      "waterfallbot": "https://bit.ly/POLISwaterfall",
-      "website": "https://staratlas.com"
-    }
-  },
-  {
-    "chainId": 101,
     "address": "8ymi88q5DtmdNTn2sPRNFkvMkszMHuLJ1e3RVdWjPa3s",
     "symbol": "SDOGE",
     "name": "SolDoge",
