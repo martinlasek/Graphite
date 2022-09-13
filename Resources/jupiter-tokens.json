@@ -1,3 +1,4 @@
+let JSON = """
 [
   {
     "chainId": 101,
@@ -12306,3 +12307,4 @@
     "logoURI": "https://i.imgur.com/iFgvQva.png"
   }
 ]
+"""
