@@ -64,6 +64,15 @@ struct QuoteResponse: Codable {
 }
 
 extension QuoteResponse.Transaction {
+    func containsKnownCoins() -> Bool {
+        for info in self.marketInfos {
+            if info.containsKnownCoins() == false {
+                return false
+            }
+        }
+        return true
+    }
+    
     func printMarketInfo() {
         for info in self.marketInfos {
             info.printInfo()
@@ -72,6 +81,31 @@ extension QuoteResponse.Transaction {
 }
 
 extension QuoteResponse.MarketInfo {
+    func containsKnownCoins() -> Bool {
+        guard
+            let inMint = self.inputMint,
+            let outMint = self.outputMint
+        else {
+            return false
+        }
+
+        let inputCoin = CryptoCurrency(with: inMint)
+        let outputCoin = CryptoCurrency(with: outMint)
+        let unknownSymbol = CryptoCurrency.unsupported("").info.symbol
+
+        if inputCoin.info.symbol == unknownSymbol {
+            print("\nUnknown Coin: \(inputCoin.info.address)")
+            return false
+        }
+
+        if outputCoin.info.symbol == unknownSymbol {
+            print("\nUnknown Coin: \(outputCoin.info.address)")
+            return false
+        }
+
+        return true
+    }
+
     func printInfo() {
         guard
             let exchange = self.label,
