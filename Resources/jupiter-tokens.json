@@ -836,21 +836,6 @@
   },
   {
     "chainId": 101,
-    "address": "EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp",
-    "symbol": "FIDA",
-    "name": "Bonfida",
-    "decimals": 6,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp/logo.svg",
-    "extensions": {
-      "coingeckoId": "bonfida",
-      "serumV3Usdc": "E14BKBhDWD4EuTkWj1ooZezesGxMW8LPCps4W5PuzZJo",
-      "serumV3Usdt": "EbV7pPpEvheLizuYX3gUCvWM8iySbSRAhu2mQ5Vz2Mxf",
-      "waterfallbot": "https://bit.ly/FIDAwaterfall",
-      "website": "https://bonfida.com/"
-    }
-  },
-  {
-    "chainId": 101,
     "address": "kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6",
     "symbol": "KIN",
     "name": "KIN",
@@ -1136,24 +1121,6 @@
   },
   {
     "chainId": 101,
-    "address": "StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT",
-    "symbol": "STEP",
-    "name": "Step",
-    "decimals": 9,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT/logo.png",
-    "tags": [
-      "utility-token"
-    ],
-    "extensions": {
-      "coingeckoId": "step-finance",
-      "serumV3Usdc": "97qCB4cAVSTthvJu3eNoEx6AY6DLuRDtCoPm5Tdyg77S",
-      "twitter": "https://twitter.com/StepFinance_",
-      "waterfallbot": "https://bit.ly/STEPwaterfall",
-      "website": "https://step.finance/"
-    }
-  },
-  {
-    "chainId": 101,
     "address": "xStpgUCss9piqeFUk2iLVcvJEGhAdJxJQuwLkXP555G",
     "symbol": "xSTEP",
     "name": "Staked Step",
@@ -1215,20 +1182,6 @@
   },
   {
     "chainId": 101,
-    "address": "xxxxa1sKNGwFtw2kFn8XauW9xq8hBZ5kVtcSesTT9fW",
-    "symbol": "SLIM",
-    "name": "Solanium",
-    "decimals": 6,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/xxxxa1sKNGwFtw2kFn8XauW9xq8hBZ5kVtcSesTT9fW/logo.png",
-    "extensions": {
-      "coingeckoId": "solanium",
-      "telegram": "https://t.me/solanium_io",
-      "twitter": "https://twitter.com/solanium_io",
-      "website": "https://www.solanium.io/"
-    }
-  },
-  {
-    "chainId": 101,
     "address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
     "symbol": "SAMO",
     "name": "Samoyed Coin",
@@ -1257,24 +1210,6 @@
       "telegram": "https://t.me/pandacoin_announcements",
       "twitter": "https://twitter.com/pandacoin_fi",
       "website": "https://pandacrypto.org/"
-    }
-  },
-  {
-    "chainId": 101,
-    "address": "ATLASXmbPQxBUYbxPsV97usA3fPQYEqzQBUHgiFCUsXx",
-    "symbol": "ATLAS",
-    "name": "Star Atlas",
-    "decimals": 8,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/ATLASXmbPQxBUYbxPsV97usA3fPQYEqzQBUHgiFCUsXx/logo.png",
-    "tags": [
-      "utility-token"
-    ],
-    "extensions": {
-      "coingeckoId": "star-atlas",
-      "description": "Star Atlas Token",
-      "serumV3Usdc": "Di66GTLsV64JgCCYGVcY21RZ173BHkjJVgPyezNN7P1K",
-      "waterfallbot": "https://bit.ly/ATLASwaterfall",
-      "website": "https://staratlas.com"
     }
   },
   {
@@ -1659,23 +1594,6 @@
   },
   {
     "chainId": 101,
-    "address": "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE",
-    "symbol": "ORCA",
-    "name": "Orca",
-    "decimals": 6,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE/logo.png",
-    "extensions": {
-      "coingeckoId": "orca",
-      "discord": "https://discord.com/invite/nSwGWn5KSG",
-      "medium": "https://orca-so.medium.com",
-      "serumV3Usdc": "8N1KkhaCYDpj3awD58d85n973EwkpeYnRp84y1kdZpMX",
-      "telegram": "https://t.me/orca_so",
-      "twitter": "https://twitter.com/orca_so",
-      "website": "https://orca.so"
-    }
-  },
-  {
-    "chainId": 101,
     "address": "6cVgJUqo4nmvQpbgrDZwyfd6RwWw5bfnCamS3M9N1fd",
     "symbol": "SHILL",
     "name": "Project SEED Token",
@@ -1753,20 +1671,6 @@
       "serumV3Usdc": "6hwK66FfUdyhncdQVxWFPRqY8y6usEvzekUaqtpKEKLr",
       "twitter": "https://twitter.com/SolanaSail",
       "website": "https://www.solanasail.com"
-    }
-  },
-  {
-    "chainId": 101,
-    "address": "E5ndSkaB17Dm7CsD22dvcjfrYSDLCxFcMd6z8ddCk5wp",
-    "symbol": "RIN",
-    "name": "Aldrin",
-    "decimals": 9,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/E5ndSkaB17Dm7CsD22dvcjfrYSDLCxFcMd6z8ddCk5wp/logo.png",
-    "extensions": {
-      "coingeckoId": "aldrin",
-      "serumV3Usdc": "7gZNLDbWE73ueAoHuAeFoSu7JqmorwCLpNTBXHtYSFTa",
-      "twitter": "https://twitter.com/Aldrin_Exchange",
-      "website": "https://rin.aldrin.com/"
     }
   },
   {
@@ -2268,21 +2172,6 @@
   },
   {
     "chainId": 101,
-    "address": "MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac",
-    "symbol": "MNGO",
-    "name": "Mango",
-    "decimals": 6,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/MangoCzJ36AjZyKwVj3VnYU4GTonjfVEnJmvvWaxLac/token.png",
-    "extensions": {
-      "coingeckoId": "mango-markets",
-      "discord": "https://discord.gg/67jySBhxrg",
-      "serumV3Usdc": "3d4rzwpy9iGdCZvgxcu7B1YocYffVLsQXPXkBZKt2zLc",
-      "twitter": "https://twitter.com/mangomarkets",
-      "website": "https://mango.markets/"
-    }
-  },
-  {
-    "chainId": 101,
     "address": "EwJN2GqUGXXzYmoAciwuABtorHczTA5LqbukKXV1viH7",
     "symbol": "UPS",
     "name": "UPS token (UPFI Network)",
@@ -2328,25 +2217,6 @@
     ],
     "extensions": {
       "coingeckoId": "parrot-usd",
-      "discord": "https://discord.gg/gopartyparrot",
-      "medium": "https://gopartyparrot.medium.com/",
-      "telegram": "https://t.me/gopartyparrot",
-      "twitter": "https://twitter.com/gopartyparrot",
-      "website": "https://parrot.fi"
-    }
-  },
-  {
-    "chainId": 101,
-    "address": "PRT88RkA4Kg5z7pKnezeNH4mafTvtQdfFgpQTGRjz44",
-    "symbol": "PRT",
-    "name": "PRT (Parrot Protocol)",
-    "decimals": 6,
-    "logoURI": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/PRT88RkA4Kg5z7pKnezeNH4mafTvtQdfFgpQTGRjz44/logo.svg",
-    "tags": [
-      "utility-token"
-    ],
-    "extensions": {
-      "coingeckoId": "parrot-protocol",
       "discord": "https://discord.gg/gopartyparrot",
       "medium": "https://gopartyparrot.medium.com/",
       "telegram": "https://t.me/gopartyparrot",

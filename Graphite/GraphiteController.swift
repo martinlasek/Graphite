@@ -19,7 +19,7 @@ struct GraphiteController {
         // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
 
         while true {
-            let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .usdc, outputMint: .oxy)
+            let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .usdc, outputMint: .ray)
             try await Task.sleep(nanoseconds: 1_000_000_000)
 
             if hasExecutedATrade {
@@ -33,7 +33,6 @@ struct GraphiteController {
 }
 
 // MARK: - Try finding and then executing profitable trade
-
 extension GraphiteController {
     private static func checkPossibleTradeAndExecuteIfProfitable(
         inputMint: CryptoCurrency,
@@ -45,6 +44,15 @@ extension GraphiteController {
             let inputData = quoteResponses.input.data.first,
             let outputData = quoteResponses.output.data.first
         else {
+            return false
+        }
+
+        // MARK: - Early return if Transactions possess unknown coin
+        guard
+            inputData.containsKnownCoins(),
+            outputData.containsKnownCoins()
+        else {
+            print("✋🏻 Unknown Coins ✋🏻")
             return false
         }
 
