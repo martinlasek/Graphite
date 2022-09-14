@@ -10,6 +10,9 @@
 		062A9D8928BAD45400D949E4 /* SwapRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062A9D8828BAD45400D949E4 /* SwapRequest.swift */; };
 		06E488C028BC430E00294009 /* SwapResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488BF28BC430E00294009 /* SwapResponse.swift */; };
 		06E488C328BC521600294009 /* RouteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488C228BC521600294009 /* RouteRequest.swift */; };
+		06F1DB4728D1267500EB16C0 /* CoinListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1DB4628D1267500EB16C0 /* CoinListManager.swift */; };
+		06F1DB4D28D151C900EB16C0 /* jupiter-tokens.json in Resources */ = {isa = PBXBuildFile; fileRef = 06F1DB4828D147ED00EB16C0 /* jupiter-tokens.json */; };
+		06F1DB4F28D1535800EB16C0 /* CoinList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1DB4E28D1535800EB16C0 /* CoinList.swift */; };
 		232A172F28B1FD7300D6B86A /* GraphiteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A172E28B1FD7300D6B86A /* GraphiteController.swift */; };
 		232A173628B1FDA200D6B86A /* Base58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173528B1FDA200D6B86A /* Base58.swift */; };
 		232A173C28B2C5FC00D6B86A /* WalletKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173B28B2C5FC00D6B86A /* WalletKeyManager.swift */; };
@@ -43,13 +46,15 @@
 		062A9D8828BAD45400D949E4 /* SwapRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapRequest.swift; sourceTree = "<group>"; };
 		06E488BF28BC430E00294009 /* SwapResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapResponse.swift; sourceTree = "<group>"; };
 		06E488C228BC521600294009 /* RouteRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteRequest.swift; sourceTree = "<group>"; };
+		06F1DB4628D1267500EB16C0 /* CoinListManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinListManager.swift; sourceTree = "<group>"; };
+		06F1DB4828D147ED00EB16C0 /* jupiter-tokens.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "jupiter-tokens.json"; sourceTree = "<group>"; };
+		06F1DB4E28D1535800EB16C0 /* CoinList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinList.swift; sourceTree = "<group>"; };
 		232A172B28B1FD7300D6B86A /* Graphite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Graphite; sourceTree = BUILT_PRODUCTS_DIR; };
 		232A172E28B1FD7300D6B86A /* GraphiteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphiteController.swift; sourceTree = "<group>"; };
 		232A173528B1FDA200D6B86A /* Base58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base58.swift; sourceTree = "<group>"; };
 		232A173B28B2C5FC00D6B86A /* WalletKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletKeyManager.swift; sourceTree = "<group>"; };
 		232A174028B2DB9000D6B86A /* private-key-setup.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "private-key-setup.gif"; sourceTree = "<group>"; };
 		232A174128B2DBC500D6B86A /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		238DF3A128CE93D200B63FC4 /* jupiter-tokens.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "jupiter-tokens.json"; sourceTree = "<group>"; };
 		238DF3A228CEA86900B63FC4 /* DateTimeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateTimeManager.swift; sourceTree = "<group>"; };
 		23A1D7B028CAF9B200438578 /* TransactionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionManager.swift; sourceTree = "<group>"; };
 		23B5489528C404460039A410 /* GraphiteLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphiteLogger.swift; sourceTree = "<group>"; };
@@ -79,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				232A174128B2DBC500D6B86A /* README.md */,
+				06F1DB4828D147ED00EB16C0 /* jupiter-tokens.json */,
 				232A173F28B2DB8400D6B86A /* Resources */,
 				232A172D28B1FD7300D6B86A /* Graphite */,
 				232A172C28B1FD7300D6B86A /* Products */,
@@ -107,7 +113,6 @@
 		232A173F28B2DB8400D6B86A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				238DF3A128CE93D200B63FC4 /* jupiter-tokens.json */,
 				232A174028B2DB9000D6B86A /* private-key-setup.gif */,
 			);
 			path = Resources;
@@ -116,6 +121,7 @@
 		23EA0CA528C13AD00022DC1A /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				06F1DB4E28D1535800EB16C0 /* CoinList.swift */,
 				23EA0CA628C13B0D0022DC1A /* CryptoCurrency.swift */,
 				23EA0CA828C15C540022DC1A /* CryptoAmount.swift */,
 				23EA0CAA28C1BC150022DC1A /* InMemoryAccountStorage.swift */,
@@ -138,11 +144,12 @@
 		23F1A90228B52A2A005CA130 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				232A173B28B2C5FC00D6B86A /* WalletKeyManager.swift */,
 				232A173528B1FDA200D6B86A /* Base58.swift */,
+				06F1DB4628D1267500EB16C0 /* CoinListManager.swift */,
+				238DF3A228CEA86900B63FC4 /* DateTimeManager.swift */,
 				23F1A90328B52A36005CA130 /* Print+Precisely.swift */,
 				23A1D7B028CAF9B200438578 /* TransactionManager.swift */,
-				238DF3A228CEA86900B63FC4 /* DateTimeManager.swift */,
+				232A173B28B2C5FC00D6B86A /* WalletKeyManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -176,6 +183,7 @@
 				232A172728B1FD7300D6B86A /* Sources */,
 				232A172828B1FD7300D6B86A /* Frameworks */,
 				232A172928B1FD7300D6B86A /* CopyFiles */,
+				06F1DB4B28D150D200EB16C0 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -225,6 +233,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		06F1DB4B28D150D200EB16C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				06F1DB4D28D151C900EB16C0 /* jupiter-tokens.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		232A172728B1FD7300D6B86A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -238,10 +257,12 @@
 				238DF3A328CEA86900B63FC4 /* DateTimeManager.swift in Sources */,
 				06E488C328BC521600294009 /* RouteRequest.swift in Sources */,
 				06E488C028BC430E00294009 /* SwapResponse.swift in Sources */,
+				06F1DB4F28D1535800EB16C0 /* CoinList.swift in Sources */,
 				23F1A8FE28B525B8005CA130 /* QuoteResponse.swift in Sources */,
 				23EA0CAB28C1BC150022DC1A /* InMemoryAccountStorage.swift in Sources */,
 				23B5489628C404460039A410 /* GraphiteLogger.swift in Sources */,
 				23EA0CA728C13B0D0022DC1A /* CryptoCurrency.swift in Sources */,
+				06F1DB4728D1267500EB16C0 /* CoinListManager.swift in Sources */,
 				232A173C28B2C5FC00D6B86A /* WalletKeyManager.swift in Sources */,
 				232A172F28B1FD7300D6B86A /* GraphiteController.swift in Sources */,
 				232A173628B1FDA200D6B86A /* Base58.swift in Sources */,

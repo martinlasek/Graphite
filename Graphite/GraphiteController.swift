@@ -15,9 +15,6 @@ struct GraphiteController {
     static func main() async throws {
         Logger.setLoggers([GraphiteLogger()])
 
-        // MARK: - Quote for SOL worth in USDT (e.g. 1 SOL => 33 USDT)
-        // MARK: - Quote for USDT worth in SOL (e.g. 33 USDT => 1.001489444 SOL)
-
         while true {
             let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .usdc, outputMint: .ray)
             try await Task.sleep(nanoseconds: 1_000_000_000)
