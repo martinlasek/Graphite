@@ -11,8 +11,10 @@
 		06E488C028BC430E00294009 /* SwapResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488BF28BC430E00294009 /* SwapResponse.swift */; };
 		06E488C328BC521600294009 /* RouteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488C228BC521600294009 /* RouteRequest.swift */; };
 		06F1DB4728D1267500EB16C0 /* CoinListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1DB4628D1267500EB16C0 /* CoinListManager.swift */; };
-		06F1DB4D28D151C900EB16C0 /* jupiter-tokens.json in Resources */ = {isa = PBXBuildFile; fileRef = 06F1DB4828D147ED00EB16C0 /* jupiter-tokens.json */; };
 		06F1DB4F28D1535800EB16C0 /* CoinList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1DB4E28D1535800EB16C0 /* CoinList.swift */; };
+		06F1DB5B28D2D2A900EB16C0 /* jupiter-tokens.json in Resources */ = {isa = PBXBuildFile; fileRef = 06F1DB5A28D2D2A900EB16C0 /* jupiter-tokens.json */; };
+		06F1DB5C28D2D31600EB16C0 /* JSONCoins.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 06F1DB5428D2D1DC00EB16C0 /* JSONCoins.bundle */; };
+		06F1DB5E28D2DB7C00EB16C0 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1DB5D28D2DB7C00EB16C0 /* Utilities.swift */; };
 		232A172F28B1FD7300D6B86A /* GraphiteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A172E28B1FD7300D6B86A /* GraphiteController.swift */; };
 		232A173628B1FDA200D6B86A /* Base58.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173528B1FDA200D6B86A /* Base58.swift */; };
 		232A173C28B2C5FC00D6B86A /* WalletKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 232A173B28B2C5FC00D6B86A /* WalletKeyManager.swift */; };
@@ -37,6 +39,7 @@
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
+				06F1DB5C28D2D31600EB16C0 /* JSONCoins.bundle in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -47,8 +50,10 @@
 		06E488BF28BC430E00294009 /* SwapResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapResponse.swift; sourceTree = "<group>"; };
 		06E488C228BC521600294009 /* RouteRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteRequest.swift; sourceTree = "<group>"; };
 		06F1DB4628D1267500EB16C0 /* CoinListManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinListManager.swift; sourceTree = "<group>"; };
-		06F1DB4828D147ED00EB16C0 /* jupiter-tokens.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "jupiter-tokens.json"; sourceTree = "<group>"; };
 		06F1DB4E28D1535800EB16C0 /* CoinList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinList.swift; sourceTree = "<group>"; };
+		06F1DB5428D2D1DC00EB16C0 /* JSONCoins.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JSONCoins.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		06F1DB5A28D2D2A900EB16C0 /* jupiter-tokens.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "jupiter-tokens.json"; sourceTree = "<group>"; };
+		06F1DB5D28D2DB7C00EB16C0 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		232A172B28B1FD7300D6B86A /* Graphite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Graphite; sourceTree = BUILT_PRODUCTS_DIR; };
 		232A172E28B1FD7300D6B86A /* GraphiteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphiteController.swift; sourceTree = "<group>"; };
 		232A173528B1FDA200D6B86A /* Base58.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Base58.swift; sourceTree = "<group>"; };
@@ -69,6 +74,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		06F1DB5128D2D1DC00EB16C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		232A172828B1FD7300D6B86A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -84,7 +96,6 @@
 			isa = PBXGroup;
 			children = (
 				232A174128B2DBC500D6B86A /* README.md */,
-				06F1DB4828D147ED00EB16C0 /* jupiter-tokens.json */,
 				232A173F28B2DB8400D6B86A /* Resources */,
 				232A172D28B1FD7300D6B86A /* Graphite */,
 				232A172C28B1FD7300D6B86A /* Products */,
@@ -95,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				232A172B28B1FD7300D6B86A /* Graphite */,
+				06F1DB5428D2D1DC00EB16C0 /* JSONCoins.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -113,6 +125,7 @@
 		232A173F28B2DB8400D6B86A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				06F1DB5A28D2D2A900EB16C0 /* jupiter-tokens.json */,
 				232A174028B2DB9000D6B86A /* private-key-setup.gif */,
 			);
 			path = Resources;
@@ -149,6 +162,7 @@
 				238DF3A228CEA86900B63FC4 /* DateTimeManager.swift */,
 				23F1A90328B52A36005CA130 /* Print+Precisely.swift */,
 				23A1D7B028CAF9B200438578 /* TransactionManager.swift */,
+				06F1DB5D28D2DB7C00EB16C0 /* Utilities.swift */,
 				232A173B28B2C5FC00D6B86A /* WalletKeyManager.swift */,
 			);
 			path = Utils;
@@ -176,6 +190,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		06F1DB5328D2D1DC00EB16C0 /* JSONCoins */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 06F1DB5528D2D1DC00EB16C0 /* Build configuration list for PBXNativeTarget "JSONCoins" */;
+			buildPhases = (
+				06F1DB5028D2D1DC00EB16C0 /* Sources */,
+				06F1DB5128D2D1DC00EB16C0 /* Frameworks */,
+				06F1DB5228D2D1DC00EB16C0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = JSONCoins;
+			productName = JSONCoins;
+			productReference = 06F1DB5428D2D1DC00EB16C0 /* JSONCoins.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		232A172A28B1FD7300D6B86A /* Graphite */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 232A173228B1FD7300D6B86A /* Build configuration list for PBXNativeTarget "Graphite" */;
@@ -207,6 +238,9 @@
 				LastSwiftUpdateCheck = 1340;
 				LastUpgradeCheck = 1340;
 				TargetAttributes = {
+					06F1DB5328D2D1DC00EB16C0 = {
+						CreatedOnToolsVersion = 13.3;
+					};
 					232A172A28B1FD7300D6B86A = {
 						CreatedOnToolsVersion = 13.4.1;
 					};
@@ -229,6 +263,7 @@
 			projectRoot = "";
 			targets = (
 				232A172A28B1FD7300D6B86A /* Graphite */,
+				06F1DB5328D2D1DC00EB16C0 /* JSONCoins */,
 			);
 		};
 /* End PBXProject section */
@@ -238,13 +273,27 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06F1DB4D28D151C900EB16C0 /* jupiter-tokens.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		06F1DB5228D2D1DC00EB16C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				06F1DB5B28D2D2A900EB16C0 /* jupiter-tokens.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		06F1DB5028D2D1DC00EB16C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		232A172728B1FD7300D6B86A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -267,6 +316,7 @@
 				232A172F28B1FD7300D6B86A /* GraphiteController.swift in Sources */,
 				232A173628B1FDA200D6B86A /* Base58.swift in Sources */,
 				23EA0CA928C15C540022DC1A /* CryptoAmount.swift in Sources */,
+				06F1DB5E28D2DB7C00EB16C0 /* Utilities.swift in Sources */,
 				23F1A90928B532A5005CA130 /* QuoteRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -274,6 +324,46 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		06F1DB5628D2D1DC00EB16C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y356625GWD;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Crypto.JSONCoins;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		06F1DB5728D2D1DC00EB16C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y356625GWD;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Crypto.JSONCoins;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 		232A173028B1FD7300D6B86A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -408,6 +498,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		06F1DB5528D2D1DC00EB16C0 /* Build configuration list for PBXNativeTarget "JSONCoins" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				06F1DB5628D2D1DC00EB16C0 /* Debug */,
+				06F1DB5728D2D1DC00EB16C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		232A172628B1FD7300D6B86A /* Build configuration list for PBXProject "Graphite" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

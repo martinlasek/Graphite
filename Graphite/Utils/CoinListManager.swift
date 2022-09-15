@@ -7,18 +7,19 @@
 
 import Foundation
 
-class CoinListManager {
+struct CoinListManager {
 
-    var listOfCoins: [CryptoCurrency.CryptoInfo] {
-        var coins = [CryptoCurrency.CryptoInfo]()
-        do {
-            if let dataFromJsonString = coinList.data(using: .utf8) {
-                coins = try JSONDecoder().decode([CryptoCurrency.CryptoInfo].self, from: dataFromJsonString)
-            }
-        } catch {
-            fatalError("Failed to initialize Data with provided URL")
+    var listOfCoins: [CryptoCurrency.CryptoInfo]?
+
+    init() {
+        let jsonData = readLocalJSONFile(forName: "jupiter-tokens")
+        if let data = jsonData {
+            listOfCoins = parse(jsonData: data)
         }
+    }
 
-        return coins
+    func isCoinKnown(address: String) -> Bool {
+        guard let coins = listOfCoins else { return false }
+        return coins.compactMap { $0.address }.contains(address)
     }
 }

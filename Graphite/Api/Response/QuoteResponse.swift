@@ -89,17 +89,13 @@ extension QuoteResponse.MarketInfo {
             return false
         }
 
-        let inputCoin = CryptoCurrency(with: inMint)
-        let outputCoin = CryptoCurrency(with: outMint)
-        let unknownSymbol = CryptoCurrency.unsupported("").info.symbol
-
-        if inputCoin.info.symbol == unknownSymbol {
-            print("\nUnknown Coin: \(inputCoin.info.address)")
+        if !coinListManager.isCoinKnown(address: inMint) {
+            print("\nUnknown Coin: \(inMint)")
             return false
         }
 
-        if outputCoin.info.symbol == unknownSymbol {
-            print("\nUnknown Coin: \(outputCoin.info.address)")
+        if !coinListManager.isCoinKnown(address: outMint) {
+            print("\nUnknown Coin: \(outMint)")
             return false
         }
 

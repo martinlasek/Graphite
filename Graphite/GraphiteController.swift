@@ -8,6 +8,8 @@
 import Foundation
 import SolanaSwift
 
+let coinListManager = CoinListManager()
+
 @main
 struct GraphiteController {
 
