@@ -11,7 +11,6 @@
 		06E488C028BC430E00294009 /* SwapResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488BF28BC430E00294009 /* SwapResponse.swift */; };
 		06E488C328BC521600294009 /* RouteRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E488C228BC521600294009 /* RouteRequest.swift */; };
 		06F1DB4728D1267500EB16C0 /* CoinListManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1DB4628D1267500EB16C0 /* CoinListManager.swift */; };
-		06F1DB4F28D1535800EB16C0 /* CoinList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1DB4E28D1535800EB16C0 /* CoinList.swift */; };
 		06F1DB5B28D2D2A900EB16C0 /* jupiter-tokens.json in Resources */ = {isa = PBXBuildFile; fileRef = 06F1DB5A28D2D2A900EB16C0 /* jupiter-tokens.json */; };
 		06F1DB5C28D2D31600EB16C0 /* JSONCoins.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = 06F1DB5428D2D1DC00EB16C0 /* JSONCoins.bundle */; };
 		06F1DB5E28D2DB7C00EB16C0 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F1DB5D28D2DB7C00EB16C0 /* Utilities.swift */; };
@@ -50,7 +49,6 @@
 		06E488BF28BC430E00294009 /* SwapResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwapResponse.swift; sourceTree = "<group>"; };
 		06E488C228BC521600294009 /* RouteRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteRequest.swift; sourceTree = "<group>"; };
 		06F1DB4628D1267500EB16C0 /* CoinListManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinListManager.swift; sourceTree = "<group>"; };
-		06F1DB4E28D1535800EB16C0 /* CoinList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinList.swift; sourceTree = "<group>"; };
 		06F1DB5428D2D1DC00EB16C0 /* JSONCoins.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JSONCoins.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		06F1DB5A28D2D2A900EB16C0 /* jupiter-tokens.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "jupiter-tokens.json"; sourceTree = "<group>"; };
 		06F1DB5D28D2DB7C00EB16C0 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
@@ -134,7 +132,6 @@
 		23EA0CA528C13AD00022DC1A /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				06F1DB4E28D1535800EB16C0 /* CoinList.swift */,
 				23EA0CA628C13B0D0022DC1A /* CryptoCurrency.swift */,
 				23EA0CA828C15C540022DC1A /* CryptoAmount.swift */,
 				23EA0CAA28C1BC150022DC1A /* InMemoryAccountStorage.swift */,
@@ -306,7 +303,6 @@
 				238DF3A328CEA86900B63FC4 /* DateTimeManager.swift in Sources */,
 				06E488C328BC521600294009 /* RouteRequest.swift in Sources */,
 				06E488C028BC430E00294009 /* SwapResponse.swift in Sources */,
-				06F1DB4F28D1535800EB16C0 /* CoinList.swift in Sources */,
 				23F1A8FE28B525B8005CA130 /* QuoteResponse.swift in Sources */,
 				23EA0CAB28C1BC150022DC1A /* InMemoryAccountStorage.swift in Sources */,
 				23B5489628C404460039A410 /* GraphiteLogger.swift in Sources */,
