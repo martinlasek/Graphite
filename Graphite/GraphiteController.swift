@@ -9,6 +9,7 @@ import Foundation
 import SolanaSwift
 
 let coinListManager = CoinListManager()
+let baseCoin = CryptoCurrency.sol
 
 @main
 struct GraphiteController {
@@ -17,17 +18,21 @@ struct GraphiteController {
     static func main() async throws {
         Logger.setLoggers([GraphiteLogger()])
 
+        let coinBalance = await getWalletBalance(for: baseCoin)
+        print("💰 Starting Balance: \(coinBalance ?? 0.0) \(baseCoin.info.symbol)")
+
         while true {
-            let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .usdc, outputMint: .ray)
+            let hasExecutedATrade = await checkPossibleTradeAndExecuteIfProfitable(inputMint: .sol, outputMint: .ray)
             try await Task.sleep(nanoseconds: 1_000_000_000)
 
             if hasExecutedATrade {
+                let coinBalance = await getWalletBalance(for: baseCoin)
+                print("💰 New Balance: \(coinBalance ?? 0.0) \(baseCoin.info.symbol)")
+
                 print(DateTimeManager.currentTime())
                 break
             }
         }
-//        let hasExecutedATrade = await sendSolFromOneWalletToAnother()
-
     }
 }
 
@@ -104,7 +109,7 @@ extension GraphiteController {
         let firstQuote = QuoteRequest(
             inputMint: inputMint,
             outputMint: outputMint,
-            inputAmount: .full(10),
+            inputAmount: .full(1),
             slippage: .percent(0),
             publicKey: publicKeyString,
             onlyDirectRoutes: false
@@ -386,17 +391,16 @@ extension GraphiteController {
     }
 }
 
-// MARK: - Get Solana Balance
+// MARK: - Get Wallet Balance
 
 extension GraphiteController {
-
-    private static func getSolanaBalance() async {
+    private static func getWalletBalance(for coin: CryptoCurrency) async -> Double? {
         guard
             let secretKey = WalletKeyManager.getPrivateKey(),
             let account = try? Account(secretKey: Data(secretKey))
         else {
             printError(self, "Could not create account.")
-            return
+            return nil
         }
 
         let endpoint = APIEndPoint(
@@ -412,10 +416,10 @@ extension GraphiteController {
         guard
             let balance = try? await apiClient.getBalance(account: accountEncoded, commitment: "recent")
         else {
-            return
+            return nil
         }
 
-        print("💰 Solana Balance: \(CryptoAmount.unit(Int(balance)).getFullAmount(for: .sol))")
+        return CryptoAmount.unit(Int(balance)).getFullAmount(for: coin)
     }
 
     private static func handleSolanaError(id: String, _ error : Error) {
